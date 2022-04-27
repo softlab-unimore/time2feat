@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CsvFileAttributes">
+    <option name="attributeMap">
+      <map>
+        <entry key="C:\Users\jeson\AppData\Local\Programs\Python\Python39\Lib\site-packages\bokeh\sampledata\_data\auto-mpg.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\AppData\Local\Programs\Python\Python39\Lib\site-packages\bokeh\sampledata\_data\auto-mpg2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri(2).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri_1(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri_1.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri_2(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri_2.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test1\testaccelerometri_3.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\1.zip.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri(2).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri(3).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_1(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_1(2).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_1(3).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_1(4).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_1.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_2(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_2.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_3(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_3.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test2\testaccelerometri_4(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test3\testaccelerometri(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test3\testaccelerometri.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test3\testaccelerometri_1.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test3\testaccelerometri_2(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test3\testaccelerometri_2.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test3\testaccelerometri_3(1).lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test3\testaccelerometri_3.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test4\testaccelerometri_01.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test4\testaccelerometri_02.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\Novelty\Test4\testaccelerometri_03.lvm.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test1\series_state_1_1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test1\series_state_1_2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test2\series_state_2_1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test2\series_state_2_2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test3\series_state_3_1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test3\series_state_3_2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test4\series_state_4_1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\jeson\Desktop\MTS-master\data\sample\Test4\series_state_4_2.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
