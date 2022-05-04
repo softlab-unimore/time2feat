@@ -71,7 +71,7 @@ def window_selection(ts_list: list, labels: list):
         x, y = prepare_data(ts_list=ts_list, labels=labels, kernel=window)
 
         # Apply a fast clustering algorithm
-        model = ClusterWrapper(model_type='HDBSCAN', num_cluster=num_labels)
+        model = ClusterWrapper(n_clusters=num_labels, model_type='HDBSCAN')
         y_pred = model.fit_predict(x)
 
         # Compute current clustering score

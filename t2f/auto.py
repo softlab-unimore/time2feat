@@ -31,7 +31,7 @@ def simple_grid_search(df_base: pd.DataFrame, y_base: list, df_complete: pd.Data
 
     if strategy.startswith('sk'):
         grid_params['top_k'] = [10, 25, 50, 100, 200, 300] * 2
-        grid_params['transform_type'] = ['minmax', 'std']
+        # grid_params['transform_type'] = ['minmax', 'std']
         grid_params['score_mode'] = ['simple', 'domain']
     elif strategy.startswith('none'):
         grid_params['transform_type'] = ['minmax', 'std', None]
@@ -61,7 +61,7 @@ def simple_grid_search(df_base: pd.DataFrame, y_base: list, df_complete: pd.Data
 
         # Clustering step
         num_labels = len(set(y_base))
-        model = ClusterWrapper(model_type=params['model_type'], num_cluster=num_labels)
+        model = ClusterWrapper(model_type=params['model_type'], n_clusters=num_labels)
         y_pred = model.fit_predict(x_test)
 
         # Compute results

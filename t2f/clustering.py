@@ -1,19 +1,17 @@
-import hdbscan
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, KMeans, SpectralClustering
 from sklearn.metrics.cluster import adjusted_mutual_info_score, adjusted_rand_score, homogeneity_score, \
     normalized_mutual_info_score
 
+from .preprocessing import get_transformer
 
 def _define_model(model_type: str, num_cluster: int):
     """ Define the clustering model """
-    if model_type == 'HDBSCAN':
-        model = hdbscan.HDBSCAN(min_cluster_size=num_cluster)
-    elif model_type == 'AgglomerativeClustering':
+    if model_type == 'Hierarchical':
         model = AgglomerativeClustering(n_clusters=num_cluster)
     elif model_type == 'KMeans':
         model = KMeans(n_clusters=num_cluster)
-    elif model_type == 'SpectralClustering':
+    elif model_type == 'Spectral':
         model = SpectralClustering(n_clusters=num_cluster)
     else:
         raise ValueError('{} is not supported'.format(model_type))
@@ -21,7 +19,7 @@ def _define_model(model_type: str, num_cluster: int):
 
 
 def cluster_metrics(y_true: np.array, y_pred: np.array):
-    """ Compute three clustering metrics """
+    """ Compute main clustering metrics """
     return {
         'ami': adjusted_mutual_info_score(y_true, y_pred),
         'nmi': normalized_mutual_info_score(y_true, y_pred),
@@ -33,12 +31,13 @@ def cluster_metrics(y_true: np.array, y_pred: np.array):
 class ClusterWrapper(object):
     """ Wrapper for several clustering algorithms """
 
-    def __init__(self, model_type: str, num_cluster: int, normalize: bool = False):
-        self.num_cluster = num_cluster
+    def __init__(self, n_clusters: int, model_type: str, transform_type: str = None, normalize: bool = False):
+        self.num_cluster = n_clusters
         self.model_type = model_type
         self.normalize = normalize
 
-        self.model = _define_model(model_type, num_cluster)
+        self.model = _define_model(model_type, n_clusters)
+        self.transform_type = transform_type
 
     def _normalize(self, x: np.array):
         x_mean = np.mean(x, axis=1, keepdims=True)
@@ -63,6 +62,8 @@ class ClusterWrapper(object):
         x = self.remove_nan(x)
         if self.normalize:
             x = self._normalize(x)
-
+        elif self.transform_type:
+            transformer = get_transformer(self.transform_type)
+            x = transformer.fit_transform(x)
         x = x.reshape((len(x), -1))
         return self.model.fit_predict(x)

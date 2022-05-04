@@ -2,26 +2,17 @@ import numpy as np
 import pandas as pd
 
 
-def read_ts(path: str):
-    """ Wrapper for sktime load_from_tsfile_to_dataframe function """
-    df, y = load_from_tsfile_to_dataframe(path)
-    class_names = pd.get_dummies(y).sort_index(axis=1).columns
-    y = pd.get_dummies(y).sort_index(axis=1).apply(np.argmax, axis=1).to_list()
-    y = [int(x) for x in y]
-    df = df.applymap(lambda val: val.to_list())
-    ts_list = df.apply(lambda row: pd.DataFrame(np.array(list(row)).T), axis=1).to_list()
-    assert len(y) == len(ts_list), 'X and Y have different size'
-    cond = [len(ts.shape) == 2 for ts in ts_list]
-    assert np.all(cond), 'Error in time series format, shape must be 2d'
-    return ts_list, y
-
-
 def load_from_tsfile_to_dataframe(
         full_file_path_and_name,
         return_separate_X_and_y=True,
         replace_missing_vals_with="NaN",
 ):
-    """Load data from a .ts file into a Pandas DataFrame.
+    """
+    Code from sktime public library
+    https://github.com/alan-turing-institute/sktime/blob/main/sktime/datasets/_data_io.py#L448
+    """
+    """
+    Load data from a .ts file into a Pandas DataFrame.
     Parameters
     ----------
     full_file_path_and_name: str

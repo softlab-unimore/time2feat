@@ -4,7 +4,7 @@ import pandas as pd
 from collections import Counter
 
 
-def features_selection(df_features: pd.DataFrame, ranks: pd.Series, top_k: int, mode: str = 'simple'):
+def features_selection_old(df_features: pd.DataFrame, ranks: pd.Series, top_k: int, mode: str = 'simple'):
     """ Select the k most important features in the given mode """
     features = ranks.index.values
     if mode == 'simple':
