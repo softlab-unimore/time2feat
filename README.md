@@ -59,7 +59,7 @@ print(y_pred.shape)
 
 ## Working example
 
-[Example](https://github.com/softlab-unimore/time2feat) A simple notebook to apply **time2feat** on UEA & UCR
+[Demo:](https://github.com/softlab-unimore/time2feat/blob/main/demo.ipynb) a notebook to apply **time2feat** on UEA & UCR
 multivariate time series dataset.
 
 ## Dataset

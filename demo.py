@@ -1,5 +1,4 @@
 import os
-import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import adjusted_mutual_info_score
@@ -13,7 +12,6 @@ from t2f.clustering import ClusterWrapper
 def pipeline(params: dict):
     # Input and output folder
     data_dir = params['data_dir']
-    output_dir = params['output_dir']
 
     # Model params
     transform_type = params['transform_type']
@@ -25,8 +23,8 @@ def pipeline(params: dict):
     p = params.get('p', 1)
 
     # Simple consistency check
-    if not os.path.isdir(data_dir) or not os.path.isdir(output_dir):
-        raise ValueError('Dataset and/or output folder don\'t exist')
+    if not os.path.isdir(data_dir):
+        raise ValueError('Dataset folder don\'t exist')
 
     if train_size < 0 or train_size > 1:
         raise ValueError('Train size must be between 0 and 1')
@@ -64,14 +62,13 @@ def pipeline(params: dict):
 if __name__ == '__main__':
     my_params = {
         'data_dir': r'data/Cricket',  # BasicMotions
-        'output_dir': './',
 
         'train_size': 0,
         'batch_size': 500,
         'p': 1,
 
         'transform_type': 'minmax',  # None, 'std', 'minmax', 'robust'
-        'model_type': 'Hierarchical',  # 'HDBSCAN', 'Hierarchical', 'KMeans', 'Spectral'
+        'model_type': 'Hierarchical',  # 'Hierarchical', 'KMeans', 'Spectral'
 
     }
     res = pipeline(my_params)
