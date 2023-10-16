@@ -22,7 +22,8 @@ class PFA(object):
         princComp = len(pca.explained_variance_ratio_)
         A_q = pca.components_.T
 
-        kmeans = KMeans(n_clusters=princComp).fit(A_q)
+        kmeans = KMeans(n_clusters=princComp, n_init=10)
+        kmeans.fit(A_q)
         clusters = kmeans.predict(A_q)
         cluster_centers = kmeans.cluster_centers_
 

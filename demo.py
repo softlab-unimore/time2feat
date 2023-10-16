@@ -1,36 +1,31 @@
+from typing import List, Literal, Optional
 import os
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import adjusted_mutual_info_score
 
-from t2f.dataset import read_ucr_dataset
+from t2f.dataset import read_ucr_datasets
 from t2f.extractor import feature_extraction
 from t2f.importance import feature_selection
 from t2f.clustering import ClusterWrapper
 
 
-def pipeline(params: dict):
-    # Input and output folder
-    data_dir = params['data_dir']
-
-    # Model params
-    transform_type = params['transform_type']
-    model_type = params['model_type']
-
-    # Performance params
-    train_size = params['train_size']
-    batch_size = params.get('batch_size', 500)
-    p = params.get('p', 1)
-
+def pipeline(
+        files: List[str],
+        transform_type: Optional[Literal['std', 'minmax', 'robust']],
+        model_type: Literal['Hierarchical', 'KMeans', 'Spectral'],
+        train_size: float = 0,
+        batch_size: int = 500,
+        p: int = 1
+) -> None:
     # Simple consistency check
-    if not os.path.isdir(data_dir):
-        raise ValueError('Dataset folder don\'t exist')
-
+    if [x for x in files if not os.path.isfile(x)]:
+        raise ValueError('At least time-series path don\'t exist')
     if train_size < 0 or train_size > 1:
         raise ValueError('Train size must be between 0 and 1')
 
-    print('Read ucr dataset: ', data_dir)
-    ts_list, y_true = read_ucr_dataset(path=data_dir)
+    print('Read ucr datasets: ', files)
+    ts_list, y_true = read_ucr_datasets(paths=files)
     n_clusters = len(set(y_true))  # Get number of clusters to find
 
     print('Dataset shape: {}, Num of clusters: {}'.format(ts_list.shape, n_clusters))
@@ -60,15 +55,12 @@ def pipeline(params: dict):
 
 
 if __name__ == '__main__':
-    my_params = {
-        'data_dir': r'data/Cricket',  # BasicMotions
-
-        'train_size': 0,
-        'batch_size': 500,
-        'p': 1,
-
-        'transform_type': 'minmax',  # None, 'std', 'minmax', 'robust'
-        'model_type': 'Hierarchical',  # 'Hierarchical', 'KMeans', 'Spectral'
-
-    }
-    res = pipeline(my_params)
+    pipeline(
+        files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
+        transform_type='minmax',
+        model_type='Hierarchical',
+        train_size=0.0,
+        batch_size=500,
+        p=4,
+    )
+    print('Hello World!')

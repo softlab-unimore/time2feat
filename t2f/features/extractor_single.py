@@ -29,5 +29,6 @@ def extract_univariate_features(ts: np.array, sensors_name: list, feats_select: 
     # ToDo: Optimize following cycle
     features = {}
     for feat in features_extracted.columns:
-        features[feat] = float(features_extracted[feat])
+        assert len(features_extracted[feat]) == 1
+        features[feat] = float(features_extracted[feat].iloc[0])
     return features

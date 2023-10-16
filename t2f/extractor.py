@@ -142,7 +142,7 @@ def get_balanced_job(number_pool, number_job):
 
 
 def feature_extraction(ts_list: (list, np.array), batch_size: int = -1, p: int = 1):
-    """ Multi processing implementation of the feature extraction step """
+    """ Multiprocessing implementation of the feature extraction step """
     # Define the number of processors to use
     max_pool = mp.cpu_count() if p == -1 else p
     num_batch = (len(ts_list) // batch_size) + 1

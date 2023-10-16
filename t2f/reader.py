@@ -1,23 +1,21 @@
+# Code from sktime public library
+# https://github.com/alan-turing-institute/sktime/blob/main/sktime/datasets/_data_io.py#L448
 import numpy as np
 import pandas as pd
 
 
 def load_from_tsfile_to_dataframe(
         full_file_path_and_name,
-        return_separate_X_and_y=True,
+        return_separate_x_and_y=True,
         replace_missing_vals_with="NaN",
 ):
-    """
-    Code from sktime public library
-    https://github.com/alan-turing-institute/sktime/blob/main/sktime/datasets/_data_io.py#L448
-    """
     """
     Load data from a .ts file into a Pandas DataFrame.
     Parameters
     ----------
     full_file_path_and_name: str
         The full pathname of the .ts file to read.
-    return_separate_X_and_y: bool
+    return_separate_x_and_y: bool
         true if X and Y values should be returned as separate Data Frames (
         X) and a numpy array (y), false otherwise.
         This is only relevant for data that
@@ -551,7 +549,7 @@ def load_from_tsfile_to_dataframe(
             data["dim_" + str(dim)] = instance_list[dim]
         # Check if we should return any associated class labels separately
         if class_labels:
-            if return_separate_X_and_y:
+            if return_separate_x_and_y:
                 return data, np.asarray(class_val_list)
             else:
                 data["class_vals"] = pd.Series(class_val_list)
