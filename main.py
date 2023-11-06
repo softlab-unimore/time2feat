@@ -1,7 +1,7 @@
 import numpy as np
-from t2f.extractor import feature_extraction
-from t2f.importance import feature_selection
-from t2f.clustering import ClusterWrapper
+from t2f.extraction.extractor import feature_extraction
+from t2f.utils.importance_old import feature_selection
+from t2f.model.clustering import ClusterWrapper
 
 if __name__ == '__main__':
     # 10 multivariate time series with 100 timestamps and 3 signals each

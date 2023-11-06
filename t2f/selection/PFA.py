@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.metrics import euclidean_distances
 from sklearn.preprocessing import StandardScaler
@@ -40,3 +41,11 @@ class PFA(object):
 
         # print("Features Selected: " + str(list_feat))
         return list_feat, pca.explained_variance_ratio_
+
+
+def pfa_scoring(df: pd.DataFrame, expl_var_selection: float):
+    pfa = PFA()
+    feat_pfa, expl_variance_ration = pfa.fit(df, expl_var_selection)
+    # x = pfa.features_
+    # column_indices = pfa.indices_
+    return feat_pfa, expl_variance_ration

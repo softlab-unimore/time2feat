@@ -1,13 +1,14 @@
 from typing import List, Literal, Optional
 import os
+import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import adjusted_mutual_info_score
 
-from t2f.dataset import read_ucr_datasets
-from t2f.extractor import feature_extraction
-from t2f.importance import feature_selection
-from t2f.clustering import ClusterWrapper
+from t2f.data.dataset import read_ucr_datasets
+from t2f.extraction.extractor import feature_extraction
+from t2f.selection.selection import feature_selection
+from t2f.model.clustering import ClusterWrapper
 
 
 def pipeline(
@@ -59,7 +60,7 @@ if __name__ == '__main__':
         files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
         transform_type='minmax',
         model_type='Hierarchical',
-        train_size=0.0,
+        train_size=0.3,
         batch_size=500,
         p=4,
     )

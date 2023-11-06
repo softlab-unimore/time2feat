@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import multiprocessing as mp
 
-from .features.extractor_single import extract_univariate_features
-from .features.extractor_pair import extract_pair_features
+from .extractor_single import extract_univariate_features
+from .extractor_pair import extract_pair_features
 
 
 def padding_series(ts_list: list):
@@ -41,7 +41,7 @@ def extract_single_series_features_batch(ts_list: np.array, batch_size: int = -1
     num_batch = int(np.ceil(len(ts_list) / batch_size))
 
     curr_dir = os.path.dirname(os.path.abspath(__file__))
-    curr_dir = os.path.join(curr_dir, 'data/')
+    curr_dir = os.path.join(curr_dir, '../checkpoint/')
     # print('Start univariate feature extraction in batch : pid {}'.format(pid))
     for i in range(num_batch):
         a = i * batch_size
@@ -89,7 +89,7 @@ def extract_single_series_features_batch(ts_list: np.array, batch_size: int = -1
 
 def extract_pair_series_features(mts: np.array):
     """ Extract features for each time series pair """
-    features_pair = {}  # Initialize a empty dictionary to save extracted features
+    features_pair = {}  # Initialize an empty dictionary to save extracted features
 
     # Extract each possible combination pair
     indexes = np.arange(mts.shape[1])
@@ -143,12 +143,12 @@ def get_balanced_job(number_pool, number_job):
 
 def feature_extraction(ts_list: (list, np.array), batch_size: int = -1, p: int = 1):
     """ Multiprocessing implementation of the feature extraction step """
-    # Define the number of processors to use
+    # Define the number of processors to use0
     max_pool = mp.cpu_count() if p == -1 else p
     num_batch = (len(ts_list) // batch_size) + 1
     max_pool = num_batch if num_batch < max_pool else max_pool
 
-    # Balance records between jobs
+    # ToDo FDB: improve balance records between jobs
     balance_job = get_balanced_job(number_pool=max_pool, number_job=len(ts_list))
     # print('Feature extraction with {} processor and {} batch size'.format(max_pool, batch_size))
 

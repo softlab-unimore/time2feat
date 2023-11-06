@@ -23,12 +23,12 @@ def adapt_time_series(ts, sensors_name):
 
 def extract_univariate_features(ts: np.array, sensors_name: list, feats_select: dict = None):
     dict_ts = adapt_time_series(ts, sensors_name)
-    features_extracted = extract_features(dict_ts, column_id='id', column_sort='time', n_jobs=0,
-                                          kind_to_fc_parameters=feats_select)
-    # print('End feature extraction')
-    # ToDo: Optimize following cycle
-    features = {}
-    for feat in features_extracted.columns:
-        assert len(features_extracted[feat]) == 1
-        features[feat] = float(features_extracted[feat].iloc[0])
+    features_extracted = extract_features(
+        dict_ts,
+        column_id='id',
+        column_sort='time',
+        n_jobs=0,
+        kind_to_fc_parameters=feats_select
+    )
+    features = features_extracted.T.iloc[:, 0].astype(float).to_dict()
     return features

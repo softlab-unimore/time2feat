@@ -5,6 +5,25 @@ leverage both inter-signal and intra-signal features of the time series. While r
 extraction approaches allows to further refine the features by choosing the most appropriate ones and incorporating
 human feedback in the feature selection process
 
+For a detailed description of the work please read [our paper](https://www.vldb.org/pvldb/vol16/p193-tiano.pdf). Please cite the paper if you use the code from this repository in your work.
+
+```
+@article{DBLP:journals/pvldb/BonifatiB0T22,
+  author       = {Angela Bonifati and
+                  Francesco Del Buono and
+                  Francesco Guerra and
+                  Donato Tiano},
+  title        = {Time2Feat: Learning Interpretable Representations for Multivariate
+                  Time Series Clustering},
+  journal      = {Proc. {VLDB} Endow.},
+  volume       = {16},
+  number       = {2},
+  pages        = {193--201},
+  year         = {2022}
+}
+```
+
+
 ## Installation
 
 **time2feat** was tested on Python 3.7 on Linux amd Windows machines. It is recommended to use a virtual environment (
@@ -28,9 +47,9 @@ Get started with **time2feat**
 
 ```python
 import numpy as np
-from t2f.extractor import feature_extraction
-from t2f.importance import feature_selection
-from t2f.clustering import ClusterWrapper
+from t2f.extraction.extractor import feature_extraction
+from t2f.utils.importance_old import feature_selection
+from t2f.model.clustering import ClusterWrapper
 
 # 10 multivariate time series with 100 timestamps and 3 signals each
 arr = np.random.randn(10, 100, 3)
@@ -59,7 +78,7 @@ print(y_pred.shape)
 
 ## Working example
 
-[Demo:](https://github.com/softlab-unimore/time2feat/blob/main/demo.ipynb) a notebook to apply **time2feat** on UEA & UCR
+[Demo:](https://github.com/softlab-unimore/time2feat/blob/main/demo.py) a script to apply **time2feat** on UEA & UCR
 multivariate time series dataset.
 
 ## Dataset

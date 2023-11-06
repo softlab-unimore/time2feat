@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-
 from sklearn.preprocessing import RobustScaler, MinMaxScaler, StandardScaler
 from tsfresh import feature_extraction
 
@@ -19,11 +16,10 @@ def get_transformer(transform_type: str):
 
 
 def apply_transformation(x_train, x_test, transform_type: str):
-    np.seterr(divide='ignore', invalid='ignore')
+    # np.seterr(divide='ignore', invalid='ignore')
     transformer = get_transformer(transform_type)
     x_train = transformer.fit_transform(x_train)
     x_test = transformer.transform(x_test)
-
     return x_train, x_test
 
 

@@ -5,6 +5,7 @@ from sklearn.metrics.cluster import adjusted_mutual_info_score, adjusted_rand_sc
 
 from .preprocessing import get_transformer
 
+
 def _define_model(model_type: str, num_cluster: int):
     """ Define the clustering model """
     if model_type == 'Hierarchical':
