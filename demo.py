@@ -63,7 +63,7 @@ if __name__ == '__main__':
         inter_type='distance',
         transform_type='minmax',
         model_type='Hierarchical',
-        ranking_type=['anova'],
+        ranking_type=['anova', 'anova'],
         ensemble_type='average',
         train_type='random',
         train_size=0.3,
