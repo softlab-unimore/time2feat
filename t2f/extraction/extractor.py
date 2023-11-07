@@ -1,8 +1,10 @@
+from typing import Literal
 import os
 import itertools
+import multiprocessing as mp
+
 import numpy as np
 import pandas as pd
-import multiprocessing as mp
 
 from .extractor_single import extract_univariate_features
 from .extractor_pair import extract_pair_features
@@ -141,14 +143,21 @@ def get_balanced_job(number_pool, number_job):
     return list_num_job
 
 
-def feature_extraction(ts_list: (list, np.array), batch_size: int = -1, p: int = 1):
+def feature_extraction(
+        ts_list: (list, np.array),
+        intra_type: Literal['tsfresh'],
+        inter_type: Literal['distance'],
+        batch_size: int = -1,
+        p: int = 1
+):
     """ Multiprocessing implementation of the feature extraction step """
+    # ToDo FDB: insert other feature extraction type
     # Define the number of processors to use0
     max_pool = mp.cpu_count() if p == -1 else p
     num_batch = (len(ts_list) // batch_size) + 1
     max_pool = num_batch if num_batch < max_pool else max_pool
 
-    # ToDo FDB: improve balance records between jobs
+    # ToDo FDB: remove get_balanced_job
     balance_job = get_balanced_job(number_pool=max_pool, number_job=len(ts_list))
     # print('Feature extraction with {} processor and {} batch size'.format(max_pool, batch_size))
 

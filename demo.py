@@ -1,11 +1,9 @@
 from typing import List, Literal, Optional
 import os
-import pickle
-import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import adjusted_mutual_info_score
 
 from t2f.data.dataset import read_ucr_datasets
+from t2f.data.train import select_labels
 from t2f.extraction.extractor import feature_extraction
 from t2f.selection.selection import feature_selection
 from t2f.model.clustering import ClusterWrapper
@@ -13,8 +11,13 @@ from t2f.model.clustering import ClusterWrapper
 
 def pipeline(
         files: List[str],
+        intra_type: Literal['tsfresh'],
+        inter_type: Literal['distance'],
         transform_type: Optional[Literal['std', 'minmax', 'robust']],
         model_type: Literal['Hierarchical', 'KMeans', 'Spectral'],
+        ranking_type: Optional[List[Literal['anova']]] = None,
+        ensemble_type: Optional[Literal['average']] = None,
+        train_type: Literal['random'] = None,
         train_size: float = 0,
         batch_size: int = 500,
         p: int = 1
@@ -33,18 +36,16 @@ def pipeline(
 
     labels = {}
     if train_size > 0:
-        # Extract a subset of labelled mts to train the semi-supervised model
-        idx_train, _, y_train, _ = train_test_split(np.arange(len(ts_list)), y_true, train_size=train_size)
-        labels = {i: j for i, j in zip(idx_train, y_train)}
+        labels = select_labels(x=ts_list, y=y_true, method=train_type, size=train_size)
         print('Number of Labels: {}'.format(len(labels)))
 
     print('Feature extraction')
-    df_features = feature_extraction(ts_list, batch_size, p)
+    df_features = feature_extraction(ts_list=ts_list, intra_type=intra_type, inter_type=inter_type, batch_size=batch_size, p=p)
     print('Number of extracted features: {}'.format(df_features.shape[1]))
 
     print('Feature selection')
     context = {'model_type': model_type, 'transform_type': transform_type}
-    top_features = feature_selection(df_features, labels, context)
+    top_features = feature_selection(df=df_features, labels=labels, ranking_type=ranking_type, ensemble_type=ensemble_type, context=context)
     df_features = df_features[top_features]
     print('Number of selected features: {}'.format(df_features.shape[1]))
 
@@ -58,8 +59,13 @@ def pipeline(
 if __name__ == '__main__':
     pipeline(
         files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
+        intra_type='tsfresh',
+        inter_type='distance',
         transform_type='minmax',
         model_type='Hierarchical',
+        ranking_type=['anova'],
+        ensemble_type='average',
+        train_type='random',
         train_size=0.3,
         batch_size=500,
         p=4,

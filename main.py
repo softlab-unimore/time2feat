@@ -1,6 +1,6 @@
 import numpy as np
 from t2f.extraction.extractor import feature_extraction
-from t2f.utils.importance_old import feature_selection
+from t2f.selection.selection import feature_selection
 from t2f.model.clustering import ClusterWrapper
 
 if __name__ == '__main__':

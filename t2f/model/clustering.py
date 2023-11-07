@@ -8,6 +8,7 @@ from .preprocessing import get_transformer
 
 def _define_model(model_type: str, num_cluster: int):
     """ Define the clustering model """
+    # ToDo FDB: insert Semi-Supervised Clustering approaches
     if model_type == 'Hierarchical':
         model = AgglomerativeClustering(n_clusters=num_cluster)
     elif model_type == 'KMeans':

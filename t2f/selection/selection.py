@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Literal, Optional
 import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
 
@@ -25,8 +25,10 @@ def cleaning(df: pd.DataFrame) -> pd.DataFrame:
 def supervised_selection(
         df: pd.DataFrame,
         labels: dict,
+        ranking_type: list,
         model_type: str,
         transform_type: str = None,
+        ensemble_type: str = None,
 ) -> List[str]:
     # Extract train and test records, with label associated with train data
     train_idx = list(labels.keys())
@@ -39,7 +41,7 @@ def supervised_selection(
     # Create the complete dataframe
     df_all = pd.concat([df_train, df_test], axis=0, ignore_index=True)
 
-    ranker = Ranker()
+    ranker = Ranker(ranking_type=ranking_type, ensemble_type=ensemble_type)
 
     top_k = simple_grid_search(
         ranker=ranker,
@@ -62,11 +64,17 @@ def unsupervised_selection(df: pd.DataFrame) -> List[str]:
 
 def feature_selection(
         df: pd.DataFrame,
+        ranking_type: Optional[List[Literal['anova']]] = None,
+        ensemble_type: Optional[Literal['average']] = None,
         labels: dict = None,
         context: dict = None,
 ) -> List[str]:
     if labels and ('model_type' not in context or 'transform_type' not in context):
-        raise ValueError('context must contain model_type and transform_type for supervised selection')
+        raise ValueError('When labels are provided, the context must contain both "model_type" and "transform_type" keys for supervised selection.')
+    if labels and not ranking_type:
+        raise ValueError('You must select at least one feature ranking method when labels are provided.')
+    if labels and ranking_type and len(ranking_type) > 1 and not ensemble_type:
+        raise ValueError('When multiple ranking methods are specified, you must also specify an ensemble method.')
 
     df = cleaning(df)
 
@@ -74,8 +82,10 @@ def feature_selection(
         top_features = supervised_selection(
             df=df,
             labels=labels,
+            ranking_type=ranking_type,
             model_type=context['model_type'],
-            transform_type=context['transform_type']
+            transform_type=context['transform_type'],
+            ensemble_type=ensemble_type,
         )
     else:
         top_features = unsupervised_selection(df)
