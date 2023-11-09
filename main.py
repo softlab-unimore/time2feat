@@ -16,7 +16,7 @@ if __name__ == '__main__':
     model_type = 'KMeans'  # clustering model
 
     # Feature extraction
-    df_feats = feature_extraction(arr, batch_size=100, p=1)
+    df_feats = feature_extraction(arr, batch_size=100, p=1, intra_type='tsfresh', inter_type='distance')
 
     # Feature selection
     context = {'model_type': model_type, 'transform_type': transform_type}
