@@ -89,3 +89,5 @@ def condorcet_fuse(ranks: List[pd.Series]) -> pd.Series:
     df_ranks = pd.Series(np.arange(len(sorted_features)), index=sorted_features)
 
     return df_ranks
+
+#other approaches to be considered: references [11, 29, 38, 41, 77, 79, 80, 103] in https://dl.acm.org/doi/pdf/10.1145/3209978.3210186
