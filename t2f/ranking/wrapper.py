@@ -1,8 +1,9 @@
 from typing import Dict, List, Literal, Optional, Callable
 
+import numpy as np
 import pandas as pd
 
-from .baseline import anova
+from .baseline import *
 from .ensemble import average
 from ..selection.PFA import pfa_scoring
 
@@ -17,8 +18,26 @@ class Ranker(object):
                        no ensemble method is used.
     """
 
-    RANKER_MAPPING: Dict[str, Callable[[pd.DataFrame, list], pd.Series]] = {
-        'anova': anova
+    RANKER_MAPPING: Dict[str, Callable[[pd.DataFrame, np.ndarray], pd.Series]] = {
+        'anova': anova,
+        'fisher_score': fisher_score,
+        'laplace_score': laplace_score,
+        'trace_ratio100': trace_ratio100,
+        'trace_ratio': trace_ratio,
+        'mim': mim,
+        'mifs': mifs,
+        'mrmr': mrmr,
+        'cife': cife,
+        'jmi': jmi,
+        'cmim': cmim,
+        'icap': icap,
+        'disr': disr,
+        'rfs': rfs,
+        'mcfs': mcfs,
+        'udfs': udfs,
+        'ndfs': ndfs,
+        'gini': gini,
+        'cfs': cfs,
     }
 
     # ToDo GF: insert other approaches
@@ -56,7 +75,7 @@ class Ranker(object):
 
         ranks = []  # List to store ranks from each ranker
         for i, ranker in enumerate(self.rankers):
-            rank = ranker(df, y)  # Get the rank from each ranker
+            rank = ranker(df, np.array(y))  # Get the rank from each ranker
             rank.name = self.ranking_type[i]  # Name the rank series for identification
             ranks.append(rank)  # Append the rank to the list
 

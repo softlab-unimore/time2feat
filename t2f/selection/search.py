@@ -3,7 +3,6 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.model_selection import ParameterGrid
 
-from .PFA import pfa_scoring
 from ..ranking.wrapper import Ranker
 from ..model.clustering import ClusterWrapper, cluster_metrics
 
