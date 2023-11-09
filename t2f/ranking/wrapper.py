@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from .baseline import *
-from .ensemble import average
+from .ensemble import average, reciprocal_rank_fusion, condorcet_fuse
 from ..selection.PFA import pfa_scoring
 
 
@@ -42,7 +42,9 @@ class Ranker(object):
 
     # ToDo GF: insert other approaches
     ENSEMBLE_MAPPING: Dict[str, Callable[[List[pd.Series]], pd.Series]] = {
-        'average': average
+        'average': average,
+        'reciprocal_rank_fusion': reciprocal_rank_fusion,
+        'condorcet_fuse': condorcet_fuse
     }
 
     def __init__(
