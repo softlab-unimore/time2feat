@@ -16,7 +16,7 @@ def pipeline(
         transform_type: Optional[Literal['std', 'minmax', 'robust']],
         model_type: Literal['Hierarchical', 'KMeans', 'Spectral'],
         ranking_type: Optional[List[str]] = None,
-        ensemble_type: Optional[Literal['average', 'reciprocal_rank_fusion', 'condorcet_fuse']] = None,
+        ensemble_type: Optional[Literal['average', 'reciprocal_rank_fusion', 'condorcet_fuse', 'rank_biased_centroid', 'inverse_square_rank']] = None,
         train_type: Literal['random'] = None,
         train_size: float = 0,
         batch_size: int = 500,
@@ -58,13 +58,14 @@ def pipeline(
 
 if __name__ == '__main__':
     pipeline(
+        #files=['data/Cricket/Cricket_TRAIN.txt', 'data/Cricket/Cricket_TEST.txt'],
         files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
         intra_type='tsfresh',
         inter_type='distance',
         transform_type='minmax',
         model_type='Hierarchical',
         ranking_type=['anova'],
-        ensemble_type='condorcet_fuse',
+        ensemble_type='inverse_square_rank',
         train_type='random',
         train_size=0.3,
         batch_size=500,
