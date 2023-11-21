@@ -16,7 +16,7 @@ def pipeline(
         transform_type: Optional[Literal['std', 'minmax', 'robust']],
         model_type: Literal['Hierarchical', 'KMeans', 'Spectral'],
         ranking_type: Optional[List[str]] = None,
-        ensemble_type: Optional[Literal['average', 'reciprocal_rank_fusion', 'condorcet_fuse']] = None,
+        ensemble_type: Optional[Literal['average', 'reciprocal_rank_fusion', 'condorcet_fuse', 'rank_biased_centroid', 'inverse_square_rank']] = None,
         train_type: Literal['random'] = None,
         train_size: float = 0,
         batch_size: int = 500,

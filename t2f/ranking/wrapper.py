@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from .baseline import anova, fisher_score, laplace_score, trace_ratio, trace_ratio100, mim, mifs, mrmr, cife, jmi, \
     cmim, icap, disr, rfs, mcfs, udfs, ndfs, gini, cfs
-from .ensemble import average, reciprocal_rank_fusion, condorcet_fuse
+from .ensemble import average, reciprocal_rank_fusion, condorcet_fuse, rank_biased_centroid, inverse_square_rank
 from ..selection.PFA import pfa_scoring
 
 
@@ -47,7 +47,9 @@ class Ranker(object):
     ENSEMBLE_MAPPING: Dict[str, Callable[[List[pd.Series]], pd.Series]] = {
         'average': average,
         'reciprocal_rank_fusion': reciprocal_rank_fusion,
-        'condorcet_fuse': condorcet_fuse
+        'condorcet_fuse': condorcet_fuse,
+        'rank_biased_centroid': rank_biased_centroid,
+        'inverse_square_rank': inverse_square_rank
     }
 
     def __init__(
