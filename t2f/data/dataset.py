@@ -1,8 +1,8 @@
 from typing import List, Tuple
 import os
-import numpy as np
 
-# import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
 
 from .reader import load_from_tsfile_to_dataframe
 
@@ -46,4 +46,24 @@ def read_ucr_datasets(paths: List[str]) -> Tuple[np.ndarray, np.ndarray]:
     return ts_list, y
 
 
+def encode_labels(y: np.ndarray) -> np.ndarray:
+    """
+    Encode a numpy array of categorical labels into a numeric format.
 
+    Args:
+        y (np.ndarray): A numpy array of categorical labels.
+
+    Returns:
+        np.ndarray: An array of encoded labels, where each unique category in `y`
+        is mapped to an integer.
+
+    Examples:
+        > encode_labels(np.array(['apple', 'banana', 'apple', 'orange']))
+        array([0, 1, 0, 2])
+    """
+    # Initialize the LabelEncoder
+    label_encoder = LabelEncoder()
+
+    # Fit label encoder and return encoded labels
+    y_encoded = label_encoder.fit_transform(y)
+    return y_encoded

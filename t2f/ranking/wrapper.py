@@ -1,7 +1,9 @@
 from typing import Dict, List, Literal, Optional, Callable
+import time
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 from .baseline import anova, fisher_score, laplace_score, trace_ratio, trace_ratio100, mim, mifs, mrmr, cife, jmi, \
     cmim, icap, disr, rfs, mcfs, udfs, ndfs, gini, cfs
@@ -71,13 +73,16 @@ class Ranker(object):
         self.rankers = [self.RANKER_MAPPING[x] for x in self.ranking_type]  # Create list of ranker functions
         self.ensembler = self.ENSEMBLE_MAPPING.get(self.ensemble_type, None)  # Get the ensembler function
 
-    def ranking(self, df: pd.DataFrame, y: list, top_k: int) -> list:
+        self.rank = []  # Initialize an empty list to memorize the ranking results
+
+    def ranking(self, df: pd.DataFrame, y: list) -> list:
         # Identify constant columns to avoid including them in feature selection
         constant_columns = df.columns[df.nunique() <= 1].tolist()
         df = df.drop(constant_columns, axis=1)  # Remove constant columns from the DataFrame
 
         ranks = []  # List to store ranks from each ranker
-        for i, ranker in enumerate(self.rankers):
+        time.sleep(0.1)  # Small sleep for tqdm robustness
+        for i, ranker in tqdm(enumerate(self.rankers)):
             rank = ranker(df, np.array(y))  # Get the rank from each ranker
             rank.name = self.ranking_type[i]  # Name the rank series for identification
             ranks.append(rank)  # Append the rank to the list
@@ -88,7 +93,15 @@ class Ranker(object):
         else:
             rank = ranks[0]  # Use the rank from the first ranker
 
-        top_feats = rank.index.values[:top_k]  # Select the top_k features based on rank
+        # Save and return the ordered ranking
+        self.rank = rank.index.values.tolist()
+        return self.rank
+
+    def select(self, df: pd.DataFrame, top_k: int) -> list:
+        if not self.rank:
+            raise ValueError('Impossible select the top features without computing the ranking')
+        # Select the top_k features based on precomputed rank
+        top_feats = self.rank[: top_k]
         # Apply PFA to further select features that retain most information
         top_features, _ = pfa_scoring(df[top_feats], 0.9)
 

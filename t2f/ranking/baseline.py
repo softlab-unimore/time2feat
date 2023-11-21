@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_selection import SelectKBest
 
+from ..selection.PFA import pfa_scoring
 from .skfeature.function.similarity_based import fisher_score as fs
 from .skfeature.function.similarity_based import lap_score as ls
 from .skfeature.function.similarity_based import trace_ratio as tr
@@ -67,7 +68,7 @@ def fisher_score(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     return s
 
 
-def laplace_score(df: pd.DataFrame, **kwargs) -> (pd.Series, pd.Series):
+def laplace_score(df: pd.DataFrame, y: np.ndarray) -> (pd.Series, pd.Series):
     """ Compute the Laplacian scores. """
     kwargs = {"metric": "euclidean", "neighbor_mode": "knn", "weight_mode": "heat_kernel", "k": 5, 't': 1}
     affinity_matrix = construct_W.construct_W(df.values, **kwargs)
@@ -93,8 +94,11 @@ def trace_ratio(df: pd.DataFrame, y: np.ndarray, style: Literal['fisher', 'lapla
 def mim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute MIM mutual information based metric. """
+    top_features, _ = pfa_scoring(df, 0.9)
+    df = df[top_features]
     feat_idx, scores, _ = MIM.mim(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
     return s
 
 
@@ -125,8 +129,11 @@ def cife(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def jmi(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute JMI mutual information based metric. """
+    top_features, _ = pfa_scoring(df, 0.9)
+    df = df[top_features]
     feat_idx, scores, _ = JMI.jmi(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
     return s
 
 
@@ -149,8 +156,11 @@ def icap(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def disr(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute DISR mutual information based metric. """
+    top_features, _ = pfa_scoring(df, 0.9)
+    df = df[top_features]
     feat_idx, scores, _ = DISR.disr(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
     return s
 
 
@@ -166,7 +176,9 @@ def rfs(df: pd.DataFrame, y: np.ndarray, gamma: float = 1) -> pd.Series:
 def mcfs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     """ Multi-Cluster Feature Selection (MCFS). """
     # ToDo FDB: why here is used the max instead of sum?
-    scores = MCFS.mcfs(X=df.values, n_selected_features=len(df.columns), n_clusters=len(np.unique(y)))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")  # Suppress sklearn warnings
+        scores = MCFS.mcfs(X=df.values, n_selected_features=len(df.columns), n_clusters=len(np.unique(y)))
     scores = scores.max(axis=1)
     s = rank(scores=scores, features=df.columns)
     return s

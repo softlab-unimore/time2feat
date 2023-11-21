@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 import os
 from sklearn.metrics import adjusted_mutual_info_score
 
-from t2f.data.dataset import read_ucr_datasets
+from t2f.data.dataset import read_ucr_datasets, encode_labels
 from t2f.data.train import select_labels
 from t2f.extraction.extractor import feature_extraction
 from t2f.selection.selection import feature_selection
@@ -30,6 +30,7 @@ def pipeline(
 
     print('Read ucr datasets: ', files)
     ts_list, y_true = read_ucr_datasets(paths=files)
+    y_true = encode_labels(y_true)
     n_clusters = len(set(y_true))  # Get number of clusters to find
 
     print('Dataset shape: {}, Num of clusters: {}'.format(ts_list.shape, n_clusters))
@@ -40,12 +41,14 @@ def pipeline(
         print('Number of Labels: {}'.format(len(labels)))
 
     print('Feature extraction')
-    df_features = feature_extraction(ts_list=ts_list, intra_type=intra_type, inter_type=inter_type, batch_size=batch_size, p=p)
+    df_features = feature_extraction(ts_list=ts_list, intra_type=intra_type, inter_type=inter_type,
+                                     batch_size=batch_size, p=p)
     print('Number of extracted features: {}'.format(df_features.shape[1]))
 
     print('Feature selection')
     context = {'model_type': model_type, 'transform_type': transform_type}
-    top_features = feature_selection(df=df_features, labels=labels, ranking_type=ranking_type, ensemble_type=ensemble_type, context=context)
+    top_features = feature_selection(df=df_features, labels=labels, ranking_type=ranking_type,
+                                     ensemble_type=ensemble_type, context=context)
     df_features = df_features[top_features]
     print('Number of selected features: {}'.format(df_features.shape[1]))
 
@@ -56,6 +59,12 @@ def pipeline(
     print('AMI: {:0.4f}'.format(adjusted_mutual_info_score(y_true, y_pred)))
 
 
+RANKING = [
+    'anova', 'fisher_score', 'laplace_score', 'trace_ratio100', 'trace_ratio',
+    'mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap',  'disr',
+    'rfs', 'mcfs', 'udfs', 'ndfs', 'gini', 'cfs'
+]
+
 if __name__ == '__main__':
     pipeline(
         files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
@@ -63,7 +72,7 @@ if __name__ == '__main__':
         inter_type='distance',
         transform_type='minmax',
         model_type='Hierarchical',
-        ranking_type=['anova'],
+        ranking_type=RANKING,
         ensemble_type='condorcet_fuse',
         train_type='random',
         train_size=0.3,

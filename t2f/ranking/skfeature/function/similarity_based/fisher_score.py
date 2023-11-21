@@ -50,7 +50,7 @@ def fisher_score(X, y):
     lap_score = 1 - np.array(np.multiply(L_prime, 1 / D_prime))[0, :]
 
     # compute fisher score from laplacian score, where fisher_score = 1/lap_score - 1
-    score = 1.0 / lap_score - 1
+    score = 1.0 / (lap_score + 1e-14) - 1
     return np.transpose(score)
 
 

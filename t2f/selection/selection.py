@@ -51,7 +51,8 @@ def supervised_selection(
         model_type=model_type,
         transform_type=transform_type
     )
-    top_features = ranker.ranking(df=df_train, y=y_train, top_k=top_k)
+    ranker.ranking(df=df_train, y=y_train)
+    top_features = ranker.select(df=df_train, top_k=top_k)
 
     return top_features
 
@@ -70,7 +71,8 @@ def feature_selection(
         context: dict = None,
 ) -> List[str]:
     if labels and ('model_type' not in context or 'transform_type' not in context):
-        raise ValueError('When labels are provided, the context must contain both "model_type" and "transform_type" keys for supervised selection.')
+        s = 'When labels are provided, the context must contain both "model_type" and "transform_type" keys.'
+        raise ValueError(s)
     if labels and not ranking_type:
         raise ValueError('You must select at least one feature ranking method when labels are provided.')
     if labels and ranking_type and len(ranking_type) > 1 and not ensemble_type:
