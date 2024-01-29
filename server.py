@@ -1,9 +1,11 @@
 import os
 import argparse
+from datetime import datetime
 
 import pandas as pd
 
 from demo import pipeline
+
 
 DATASETS_UCR = [
     'ArticularyWordRecognition', 'AtrialFibrillation', 'BasicMotions', 'Cricket', 'Epilepsy', 'ERing',
@@ -72,6 +74,7 @@ def test_feature_selection_pipeline(
 
     # Perform time2feat pipeline for each ranking method individually
     for ranking in ranking_methods:
+        t1 = datetime.now()
         res = pipeline(
             files=files,
             intra_type='tsfresh',
@@ -87,6 +90,8 @@ def test_feature_selection_pipeline(
             checkpoint_dir=checkpoint_dir,
             random_seed=seed
         )
+        t12 = (datetime.now() - t1)
+        print(f'{ranking}: {int(t12.total_seconds() / 60)} min\n')
 
         # Save the current results to a CSV file
         results[ranking] = res
@@ -94,6 +99,7 @@ def test_feature_selection_pipeline(
 
     # Perform time2feat pipeline with all ranking methods and each ensemble method
     for ensemble in ENSEMBLE:
+        t1 = datetime.now()
         res = pipeline(
             files=files,
             intra_type='tsfresh',
@@ -108,6 +114,8 @@ def test_feature_selection_pipeline(
             p=4,
             checkpoint_dir=checkpoint_dir
         )
+        t12 = (datetime.now() - t1)
+        print(f'{ensemble}: {int(t12.total_seconds() / 60)} min\n')
 
         # Save the current results to a CSV file
         results[ensemble] = res
@@ -116,6 +124,7 @@ def test_feature_selection_pipeline(
     # Perform time2feat pipeline based on ranking method groups and all ensemble methods
     for ensemble in ENSEMBLE:
         for k, ranking in RANKING_MAP.items():
+            t1 = datetime.now()
             res = pipeline(
                 files=files,
                 intra_type='tsfresh',
@@ -130,6 +139,8 @@ def test_feature_selection_pipeline(
                 p=4,
                 checkpoint_dir=checkpoint_dir
             )
+            t12 = (datetime.now() - t1)
+            print(f'{ensemble} {k}: {int(t12.total_seconds() / 60)} min\n')
 
             # Save the current results to a CSV file
             results[f'{ensemble}{k}'] = res
