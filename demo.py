@@ -94,7 +94,6 @@ def pipeline(
         if random_seed:
             np.random.seed(random_seed)
         labels = select_labels(x=ts_list, y=y_true, method=train_type, size=train_size)
-        print(labels)
         print('Number of Labels: {}'.format(len(labels)))
 
     print('Feature extraction')
