@@ -42,6 +42,7 @@ def supervised_selection(
     df_all = pd.concat([df_train, df_test], axis=0, ignore_index=True)
 
     ranker = Ranker(ranking_type=ranking_type, ensemble_type=ensemble_type)
+    ranker.ranking(df=df_train, y=y_train)
 
     top_k = simple_grid_search(
         ranker=ranker,
@@ -51,7 +52,7 @@ def supervised_selection(
         model_type=model_type,
         transform_type=transform_type
     )
-    ranker.ranking(df=df_train, y=y_train)
+
     top_features = ranker.select(df=df_train, top_k=top_k)
 
     return top_features

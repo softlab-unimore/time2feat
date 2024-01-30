@@ -34,8 +34,8 @@ def simple_grid_search(
         An integer representing the optimal number of top features that resulted in the highest mean NMI score.
 
     """
-    # Rank features using the ranking object
-    ranker.ranking(df=df_train, y=y_train)
+    # # Rank features using the ranking object
+    # ranker.ranking(df=df_train, y=y_train)
 
     # Define grid parameters
     grid_params = {
