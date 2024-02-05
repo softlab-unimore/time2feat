@@ -99,7 +99,7 @@ def test_feature_selection_pipeline(
         pd.DataFrame(results).T.to_csv(results_path, index=True)
 
     # Perform time2feat pipeline for each ranking method individually w/o top-k search and PFA
-    for ranking in ranking_methods:
+    for ranking in ['mrmr', 'cife', 'cmim', 'icap', 'cfs']:
         print(f'\n{ranking}')
         t1 = datetime.now()
         res = pipeline(
