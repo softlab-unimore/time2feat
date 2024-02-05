@@ -160,3 +160,62 @@ def inverse_square_rank(ranks: List[pd.Series]) -> pd.Series:
     return df_ranks
 
 # other approaches to be considered: references [38, 41, 103] in https://dl.acm.org/doi/pdf/10.1145/3209978.3210186
+
+
+def combsum(scores: List[pd.Series]) -> pd.Series:
+
+    """
+    sums the scores for each feature.
+
+    This function takes a list of Pandas Series objects representing scores,
+    concatenates them into a dataframe, replaces NaN values with zeros,
+    and computes the sum for each feature
+
+    Based on: Joseph A. Shaw, Edward A. Fox: Combination of Multiple Searches. TREC 1994: 105-108
+
+    Args:
+        scores: List of pandas Series, where each series represents feature scores.
+
+    Returns:
+        A pandas Series representing the combsum across the provided score Series.
+
+    """
+    df_scores = pd.concat(scores, axis=1)  # Combine all rank Series into a DataFrame.
+    np_scores = np.array(df_scores)
+
+    df_scores = pd.Series(np.nansum(np_scores, axis=1), index=df_scores.index)
+
+
+    return df_scores
+
+
+def combmnz(scores: List[pd.Series]) -> pd.Series:
+
+    """
+    sums the scores for each feature and weights the score by the occurrence of each feature.
+
+    This function takes a list of Pandas Series objects representing scores,
+    concatenates them into a dataframe, replaces NaN values with zeros,
+    and computes the sum for each feature
+
+    Based on: Joseph A. Shaw, Edward A. Fox: Combination of Multiple Searches. TREC 1994: 105-108
+
+    Args:
+        scores: List of pandas Series, where each series represents feature scores.
+
+    Returns:
+        A pandas Series representing the combsum across the provided score Series.
+
+    """
+    df_scores = pd.concat(scores, axis=1)  # Combine all rank Series into a DataFrame.
+    np_scores = np.array(df_scores)
+
+    df_scores = pd.Series(np.nansum(np_scores, axis=1), index=df_scores.index)
+
+    df_weights = pd.Series((~np.isnan(np_scores)).sum(axis=1), index=df_scores.index)
+    df_scores = pd.concat([df_scores, df_weights], axis=1)
+    df_scores[0] = df_scores[0]*df_scores[1]
+    df_scores = pd.Series(df_scores[0])
+
+    return df_scores
+

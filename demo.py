@@ -130,7 +130,7 @@ def pipeline(
 
 
 RANKING = [
-    'anova',  # 'fisher_score', 'laplace_score', 'trace_ratio100', 'trace_ratio',
+    'anova',  'fisher_score'#, 'laplace_score', 'trace_ratio100', 'trace_ratio',
     # 'mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap',  'disr',
     # 'rfs', 'mcfs', 'udfs', 'ndfs', 'gini', 'cfs'
 ]
@@ -143,9 +143,7 @@ if __name__ == '__main__':
         transform_type='minmax',
         model_type='Hierarchical',
         ranking_type=RANKING,
-        ranking_pfa=0.9,
-        ensemble_type=None,  # 'condorcet_fuse',
-        search_type='fixed',
+        ensemble_type='combmnz',  # 'condorcet_fuse',
         train_type='random',
         train_size=0.3,  # 0.2, 0.3, 0.4, 0.5
         batch_size=500,
