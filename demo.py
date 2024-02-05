@@ -130,7 +130,7 @@ def pipeline(
 
 
 RANKING = [
-    'anova',  'fisher_score'#, 'laplace_score', 'trace_ratio100', 'trace_ratio',
+    'anova', 'fisher_score'  # , 'laplace_score', 'trace_ratio100', 'trace_ratio',
     # 'mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap',  'disr',
     # 'rfs', 'mcfs', 'udfs', 'ndfs', 'gini', 'cfs'
 ]
