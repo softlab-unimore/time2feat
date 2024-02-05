@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
 
 from .PFA import pfa_scoring
-from .search import simple_grid_search
+from .search import search
 from ..ranking.wrapper import Ranker
 
 
@@ -25,10 +25,12 @@ def cleaning(df: pd.DataFrame) -> pd.DataFrame:
 def supervised_selection(
         df: pd.DataFrame,
         labels: dict,
-        ranking_type: list,
+        ranking_type: List[str],
         model_type: str,
-        transform_type: str = None,
-        ensemble_type: str = None,
+        transform_type: Optional[str] = None,
+        ensemble_type: Optional[str] = None,
+        pfa_variance: Optional[float] = 0.9,
+        search_type: Optional[Literal['fixed', 'linear']] = None,
 ) -> List[str]:
     # Extract train and test records, with label associated with train data
     train_idx = list(labels.keys())
@@ -41,16 +43,17 @@ def supervised_selection(
     # Create the complete dataframe
     df_all = pd.concat([df_train, df_test], axis=0, ignore_index=True)
 
-    ranker = Ranker(ranking_type=ranking_type, ensemble_type=ensemble_type)
+    ranker = Ranker(ranking_type=ranking_type, ensemble_type=ensemble_type, pfa_variance=pfa_variance)
     ranker.ranking(df=df_train, y=y_train)
 
-    top_k = simple_grid_search(
+    top_k = search(
         ranker=ranker,
         df_train=df_train,
         y_train=y_train,
         df_all=df_all,
         model_type=model_type,
-        transform_type=transform_type
+        transform_type=transform_type,
+        search_type=search_type
     )
 
     top_features = ranker.select(df=df_train, top_k=top_k)
@@ -58,17 +61,22 @@ def supervised_selection(
     return top_features
 
 
-def unsupervised_selection(df: pd.DataFrame) -> List[str]:
-    # Apply PFA to select the feature which keep 90% of the information
-    top_features, _ = pfa_scoring(df, 0.9)
+def unsupervised_selection(df: pd.DataFrame, variance: Optional[float] = 0.9) -> List[str]:
+    # Apply PFA to select the feature which by default keep 90% of the information
+    if variance:
+        top_features, _ = pfa_scoring(df, variance)
+    else:
+        top_features = df.columns.tolist()
     return top_features
 
 
 def feature_selection(
         df: pd.DataFrame,
-        ranking_type: Optional[List[Literal['anova']]] = None,
-        ensemble_type: Optional[Literal['average']] = None,
         labels: dict = None,
+        ranking_type: List[str] = None,  # ['anova']
+        pfa_variance: Optional[float] = 0.9,
+        ensemble_type: str = None,
+        search_type: Optional[Literal['fixed', 'linear']] = 'fixed',
         context: dict = None,
 ) -> List[str]:
     if labels and ('model_type' not in context or 'transform_type' not in context):
@@ -86,10 +94,12 @@ def feature_selection(
             df=df,
             labels=labels,
             ranking_type=ranking_type,
+            pfa_variance=pfa_variance,
             model_type=context['model_type'],
             transform_type=context['transform_type'],
             ensemble_type=ensemble_type,
+            search_type=search_type,
         )
     else:
-        top_features = unsupervised_selection(df)
+        top_features = unsupervised_selection(df, variance=pfa_variance)
     return top_features

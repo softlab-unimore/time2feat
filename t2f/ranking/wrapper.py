@@ -58,14 +58,16 @@ class Ranker(object):
 
     def __init__(
             self,
-            ranking_type: List[Literal['anova']],
-            ensemble_type=Optional[Literal['average']]
+            ranking_type: List[str],
+            ensemble_type: Optional[str] = None,
+            pfa_variance: Optional[float] = 0.9,
     ):
         """
         Initializes the Ranker object with specified ranking and ensemble methods.
         """
         self.ranking_type = ranking_type  # Store the ranking methods
         self.ensemble_type = ensemble_type  # Store the ensemble method
+        self.pfa_variance = pfa_variance  # Store the PFA variance for the selected feature.
 
         self.with_ensemble = len(self.ranking_type) > 1  # Determine if ensemble is necessary
 
@@ -96,6 +98,8 @@ class Ranker(object):
             rank.name = self.ranking_type[i]  # Name the rank series for identification
             ranks.append(rank)  # Append the rank to the list
 
+            print(f'Before {len(df.columns)} After f{len(rank)} Null f{rank.isnull().sum()}')
+
         # Combine ranks using the ensemble method if applicable
         if self.with_ensemble:
             rank = self.ensembler(ranks)  # Apply ensemble method
@@ -111,7 +115,11 @@ class Ranker(object):
             raise ValueError('Impossible select the top features without computing the ranking')
         # Select the top_k features based on precomputed rank
         top_feats = self.rank[: top_k]
-        # Apply PFA to further select features that retain most information
-        top_features, _ = pfa_scoring(df[top_feats], 0.9)
+
+        if self.pfa_variance:
+            # Apply PFA to further select features that retain most information
+            top_features, _ = pfa_scoring(df[top_feats], self.pfa_variance)
+        else:
+            top_features = top_feats
 
         return top_features  # Return the list of top features

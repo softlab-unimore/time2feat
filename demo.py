@@ -68,14 +68,16 @@ def pipeline(
         inter_type: Literal['distance'],
         transform_type: Optional[Literal['std', 'minmax', 'robust']],
         model_type: Literal['Hierarchical', 'KMeans', 'Spectral'],
-        ranking_type: Optional[List[str]] = None,
-        ensemble_type: Optional[str] = None,
-        train_type: Literal['random'] = None,
+        ranking_type: List[str] = None,  # ['anova']
+        ranking_pfa: Optional[float] = 0.9,
+        ensemble_type: str = None,
+        search_type: Optional[Literal['fixed', 'linear']] = 'fixed',
+        train_type: Literal['random'] = 'random',
         train_size: float = 0,
         batch_size: int = 500,
         p: int = 1,
         checkpoint_dir: Optional[str] = None,
-        random_seed: int = None
+        random_seed: Optional[int] = None
 ) -> dict:
     # Simple consistency check
     if [x for x in files if not os.path.isfile(x)]:
@@ -106,8 +108,15 @@ def pipeline(
 
     print('Feature selection')
     context = {'model_type': model_type, 'transform_type': transform_type}
-    top_features = feature_selection(df=df_features, labels=labels, ranking_type=ranking_type,
-                                     ensemble_type=ensemble_type, context=context)
+    top_features = feature_selection(
+        df=df_features,
+        labels=labels,
+        ranking_type=ranking_type,
+        ensemble_type=ensemble_type,
+        pfa_variance=ranking_pfa,
+        search_type=search_type,
+        context=context
+    )
     df_features = df_features[top_features]
     print('Number of selected features: {}'.format(df_features.shape[1]))
 
@@ -134,7 +143,9 @@ if __name__ == '__main__':
         transform_type='minmax',
         model_type='Hierarchical',
         ranking_type=RANKING,
+        ranking_pfa=0.9,
         ensemble_type=None,  # 'condorcet_fuse',
+        search_type='fixed',
         train_type='random',
         train_size=0.3,  # 0.2, 0.3, 0.4, 0.5
         batch_size=500,

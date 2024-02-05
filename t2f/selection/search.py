@@ -1,3 +1,4 @@
+from typing import Optional, Literal
 import time
 import pandas as pd
 from tqdm import tqdm
@@ -14,7 +15,7 @@ def simple_grid_search(
         df_all: pd.DataFrame,
         model_type: str,
         transform_type: str = None,
-):
+) -> int:
     """Performs a simple grid search over a set of parameters to find the optimal number of top features.
 
     This function takes a ranking object which is used to rank and select features from the training data. It then
@@ -73,3 +74,27 @@ def simple_grid_search(
 
     # Return the top_k value with the highest mean NMI score
     return df_res['top_k'].iloc[0]
+
+
+def search(
+        ranker: Ranker,
+        df_train: pd.DataFrame,
+        y_train: list,
+        df_all: pd.DataFrame,
+        model_type: str,
+        transform_type: str = None,
+        search_type: Optional[Literal['fixed', 'linear']] = None,
+) -> int:
+    if search_type == 'fixed':
+        return simple_grid_search(
+            ranker=ranker,
+            df_train=df_train,
+            y_train=y_train,
+            df_all=df_all,
+            model_type=model_type,
+            transform_type=transform_type,
+        )
+    elif search_type == 'linear':
+        assert False, 'Linear search is not supported'
+    else:
+        return len(df_train.columns)

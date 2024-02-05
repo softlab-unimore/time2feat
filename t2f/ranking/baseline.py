@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_selection import SelectKBest
 
+from ..constants import PFA_ALPHA_RANKING_BASELINE as PFA_ALPHA
 from ..selection.PFA import pfa_scoring
 from .skfeature.function.similarity_based import fisher_score as fs
 from .skfeature.function.similarity_based import lap_score as ls
@@ -94,7 +95,8 @@ def trace_ratio(df: pd.DataFrame, y: np.ndarray, style: Literal['fisher', 'lapla
 def mim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute MIM mutual information based metric. """
-    top_features, _ = pfa_scoring(df, 0.9)
+    # Note: This method eliminates features that are not important due to PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = MIM.mim(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
@@ -105,6 +107,7 @@ def mim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def mifs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute MIFS mutual information based metric. """
+    # Note: This method eliminates features that are not important.
     feat_idx, scores, _ = MIFS.mifs(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
     return s
@@ -113,6 +116,7 @@ def mifs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def mrmr(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute MRMR mutual information based metric. """
+    # Note: This method eliminates features that are not important.
     feat_idx, scores, _ = MRMR.mrmr(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
     return s
@@ -121,6 +125,9 @@ def mrmr(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def cife(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute CIFE mutual information based metric. """
+    # Note: This method eliminates features that are not important also w/o PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     feat_idx, scores, _ = CIFE.cife(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
     return s
@@ -129,7 +136,8 @@ def cife(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def jmi(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute JMI mutual information based metric. """
-    top_features, _ = pfa_scoring(df, 0.9)
+    # Note: This method eliminates features that are not important due to PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = JMI.jmi(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
@@ -140,6 +148,9 @@ def jmi(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def cmim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute CMIM mutual information based metric. """
+    # Note: This method eliminates features that are not important also w/o PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     feat_idx, scores, _ = CMIM.cmim(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
     return s
@@ -148,6 +159,9 @@ def cmim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def icap(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute ICAP mutual information based metric. """
+    # Note: This method eliminates features that are not important also w/o PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     feat_idx, scores, _ = ICAP.icap(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
     return s
@@ -156,7 +170,8 @@ def icap(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 def disr(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # ToDO FDB: check rank and score order
     """ Compute DISR mutual information based metric. """
-    top_features, _ = pfa_scoring(df, 0.9)
+    # Note: This method eliminates features that are not important due to PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = DISR.disr(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
@@ -176,6 +191,9 @@ def rfs(df: pd.DataFrame, y: np.ndarray, gamma: float = 1) -> pd.Series:
 def mcfs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     """ Multi-Cluster Feature Selection (MCFS). """
     # ToDo FDB: why here is used the max instead of sum?
+    # Note: This method eliminates features that are not important due to PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")  # Suppress sklearn warnings
         scores = MCFS.mcfs(X=df.values, n_selected_features=len(df.columns), n_clusters=len(np.unique(y)))
@@ -186,6 +204,9 @@ def mcfs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 
 def udfs(df: pd.DataFrame, y: np.ndarray, gamma: float = 0.1, k: int = 5) -> pd.Series:
     """ L2/1-norm regularized discriminative feature selection for unsupervised learning. """
+    # Note: This method eliminates features that are not important due to PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     scores = UDFS.udfs(X=df.values, n_clusters=len(np.unique(y)), gamma=gamma, k=k)
     scores = (scores * scores).sum(axis=1)
     s = rank(scores=scores, features=df.columns)
@@ -194,6 +215,9 @@ def udfs(df: pd.DataFrame, y: np.ndarray, gamma: float = 0.1, k: int = 5) -> pd.
 
 def ndfs(df: pd.DataFrame, y: np.ndarray, alpha: float = 1, beta: float = 1, gamma: float = 10e8) -> pd.Series:
     """ Unsupervised feature selection using non-negative spectral analysis. """
+    # Note: This method eliminates features that are not important due to PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     n_clusters = len(np.unique(y))
     y_matrix = construct_label_matrix(np.array(y, dtype=int))
     t_matrix = np.dot(y_matrix.transpose(), y_matrix)
@@ -208,6 +232,9 @@ def ndfs(df: pd.DataFrame, y: np.ndarray, alpha: float = 1, beta: float = 1, gam
 
 def gini(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     """ This function implements the gini index feature selection. """
+    # Note: This method eliminates features that are not important due to PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     scores = gini_index.gini_index(X=df.values, y=y)
     scores = -scores
     s = rank(scores=scores, features=df.columns)
@@ -216,6 +243,9 @@ def gini(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
 
 def cfs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     """ This function uses a correlation based heuristic to evaluate the worth of features which is called CFS. """
+    # Note: This method eliminates features that are not important also w/o PFA.
+    top_features, _ = pfa_scoring(df, PFA_ALPHA)
+    df = df[top_features]
     feat_idx = CFS.cfs(X=df.values, y=y)
     scores = np.ones(len(feat_idx))
     s = rank(scores=list(scores), features=df.columns.values[feat_idx])

@@ -74,6 +74,7 @@ def test_feature_selection_pipeline(
 
     # Perform time2feat pipeline for each ranking method individually
     for ranking in ranking_methods:
+        print(f'\n{ranking}')
         t1 = datetime.now()
         res = pipeline(
             files=files,
@@ -97,8 +98,37 @@ def test_feature_selection_pipeline(
         results[ranking] = res
         pd.DataFrame(results).T.to_csv(results_path, index=True)
 
+    # Perform time2feat pipeline for each ranking method individually w/o top-k search and PFA
+    for ranking in ranking_methods:
+        print(f'\n{ranking}')
+        t1 = datetime.now()
+        res = pipeline(
+            files=files,
+            intra_type='tsfresh',
+            inter_type='distance',
+            transform_type='minmax',
+            model_type='Hierarchical',
+            ranking_type=[ranking],
+            ranking_pfa=None,
+            ensemble_type=None,  # 'condorcet_fuse',
+            search_type=None,
+            train_type='random',
+            train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+            batch_size=500,
+            p=4,
+            checkpoint_dir=checkpoint_dir,
+            random_seed=seed
+        )
+        t12 = (datetime.now() - t1)
+        print(f'{ranking} w/o S&PFA: {int(t12.total_seconds() / 60)} min\n')
+
+        # Save the current results to a CSV file
+        results[ranking] = res
+        pd.DataFrame(results).T.to_csv(results_path, index=True)
+
     # Perform time2feat pipeline with all ranking methods and each ensemble method
     for ensemble in ENSEMBLE:
+        print(f'\n{ensemble}')
         t1 = datetime.now()
         res = pipeline(
             files=files,
@@ -124,6 +154,7 @@ def test_feature_selection_pipeline(
     # Perform time2feat pipeline based on ranking method groups and all ensemble methods
     for ensemble in ENSEMBLE:
         for k, ranking in RANKING_MAP.items():
+            print(f'\n{ensemble} {ranking}')
             t1 = datetime.now()
             res = pipeline(
                 files=files,
