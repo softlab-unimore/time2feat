@@ -64,7 +64,7 @@ def test_feature_selection_pipeline(
         seed: int = None,
 ):
     # Create a results file name based on the base name of the directory of the first file and the train size
-    results_name = os.path.basename(os.path.dirname(files[0])) + f'_s{int(train_size) * 100}.csv'
+    results_name = os.path.basename(os.path.dirname(files[0])) + f'_s{int(train_size * 100)}.csv'
     results_path = os.path.join(output_dir, results_name)
     # Initialize a dictionary to store the results
     results = {}
