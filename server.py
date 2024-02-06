@@ -6,7 +6,6 @@ import pandas as pd
 
 from demo import pipeline
 
-
 DATASETS_UCR = [
     'ArticularyWordRecognition', 'AtrialFibrillation', 'BasicMotions', 'Cricket', 'Epilepsy', 'ERing',
     'EthanolConcentration', 'HandMovementDirection', 'Handwriting', 'Libras', 'RacketSports', 'SelfRegulationSCP1',
@@ -130,20 +129,24 @@ def test_feature_selection_pipeline(
     for ensemble in ENSEMBLE:
         print(f'\n{ensemble}')
         t1 = datetime.now()
-        res = pipeline(
-            files=files,
-            intra_type='tsfresh',
-            inter_type='distance',
-            transform_type='minmax',
-            model_type='Hierarchical',
-            ranking_type=ranking_methods,
-            ensemble_type=ensemble,  # 'condorcet_fuse',
-            train_type='random',
-            train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
-            batch_size=500,
-            p=4,
-            checkpoint_dir=checkpoint_dir
-        )
+        try:
+            res = pipeline(
+                files=files,
+                intra_type='tsfresh',
+                inter_type='distance',
+                transform_type='minmax',
+                model_type='Hierarchical',
+                ranking_type=ranking_methods,
+                ensemble_type=ensemble,  # 'condorcet_fuse',
+                train_type='random',
+                train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+                batch_size=500,
+                p=4,
+                checkpoint_dir=checkpoint_dir
+            )
+        except:
+            res = {}
+
         t12 = (datetime.now() - t1)
         print(f'{ensemble}: {int(t12.total_seconds() / 60)} min\n')
 
@@ -156,20 +159,24 @@ def test_feature_selection_pipeline(
         for k, ranking in RANKING_MAP.items():
             print(f'\n{ensemble} {ranking}')
             t1 = datetime.now()
-            res = pipeline(
-                files=files,
-                intra_type='tsfresh',
-                inter_type='distance',
-                transform_type='minmax',
-                model_type='Hierarchical',
-                ranking_type=ranking,
-                ensemble_type=ensemble,  # 'condorcet_fuse',
-                train_type='random',
-                train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
-                batch_size=500,
-                p=4,
-                checkpoint_dir=checkpoint_dir
-            )
+            try:
+                res = pipeline(
+                    files=files,
+                    intra_type='tsfresh',
+                    inter_type='distance',
+                    transform_type='minmax',
+                    model_type='Hierarchical',
+                    ranking_type=ranking,
+                    ensemble_type=ensemble,  # 'condorcet_fuse',
+                    train_type='random',
+                    train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+                    batch_size=500,
+                    p=4,
+                    checkpoint_dir=checkpoint_dir
+                )
+            except:
+                res = {}
+
             t12 = (datetime.now() - t1)
             print(f'{ensemble} {k}: {int(t12.total_seconds() / 60)} min\n')
 
