@@ -28,11 +28,11 @@ RANKING_MAP = {
 }
 
 ENSEMBLE = [
-    'average'
-    'reciprocal_rank_fusion'
-    'condorcet_fuse'
-    'rank_biased_centroid'
-    'inverse_square_rank'
+    'average',
+    'reciprocal_rank_fusion',
+    'condorcet_fuse',
+    'rank_biased_centroid',
+    'inverse_square_rank',
 ]
 
 
