@@ -44,7 +44,6 @@ class Ranker(object):
         'cfs': cfs,
     }
 
-    # ToDo GF: insert other approaches
     ENSEMBLE_MAPPING: Dict[str, Callable[[List[pd.Series]], pd.Series]] = {
         'average': average,
         'reciprocal_rank_fusion': reciprocal_rank_fusion,
@@ -55,7 +54,6 @@ class Ranker(object):
         'combmnz': combmnz
     }
 
-    # ToDo GF: insert ensemble that need scores
     ENSEMBLE_WITH_SCORE = [
         'combsum',
         'combmnz'
@@ -99,11 +97,9 @@ class Ranker(object):
         ranks = []  # List to store ranks from each ranker
         time.sleep(0.1)  # Small sleep for tqdm robustness
         for i, ranker in tqdm(enumerate(self.rankers)):
-            rank = ranker(df, np.array(y))  # Get the rank from each ranker
+            rank = ranker(df.copy(), np.array(y).copy())  # Get the rank from each ranker
             rank.name = self.ranking_type[i]  # Name the rank series for identification
             ranks.append(rank)  # Append the rank to the list
-
-            print(f'Before {len(df.columns)} After f{len(rank)} Null f{rank.isnull().sum()}')
 
         # Combine ranks using the ensemble method if applicable
         if self.with_ensemble:
