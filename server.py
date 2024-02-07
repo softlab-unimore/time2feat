@@ -75,21 +75,24 @@ def test_feature_selection_pipeline(
     for ranking in ranking_methods:
         print(f'\n{ranking}')
         t1 = datetime.now()
-        res = pipeline(
-            files=files,
-            intra_type='tsfresh',
-            inter_type='distance',
-            transform_type='minmax',
-            model_type='Hierarchical',
-            ranking_type=[ranking],
-            ensemble_type=None,  # 'condorcet_fuse',
-            train_type='random',
-            train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
-            batch_size=500,
-            p=4,
-            checkpoint_dir=checkpoint_dir,
-            random_seed=seed
-        )
+        try:
+            res = pipeline(
+                files=files,
+                intra_type='tsfresh',
+                inter_type='distance',
+                transform_type='minmax',
+                model_type='Hierarchical',
+                ranking_type=[ranking],
+                ensemble_type=None,  # 'condorcet_fuse',
+                train_type='random',
+                train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+                batch_size=500,
+                p=4,
+                checkpoint_dir=checkpoint_dir,
+                random_seed=seed
+            )
+        except:
+            res = {}
         t12 = (datetime.now() - t1)
         print(f'{ranking}: {int(t12.total_seconds() / 60)} min\n')
 
@@ -101,23 +104,26 @@ def test_feature_selection_pipeline(
     for ranking in ['mrmr', 'cife', 'cmim', 'icap', 'cfs']:
         print(f'\n{ranking}')
         t1 = datetime.now()
-        res = pipeline(
-            files=files,
-            intra_type='tsfresh',
-            inter_type='distance',
-            transform_type='minmax',
-            model_type='Hierarchical',
-            ranking_type=[ranking],
-            ranking_pfa=None,
-            ensemble_type=None,  # 'condorcet_fuse',
-            search_type=None,
-            train_type='random',
-            train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
-            batch_size=500,
-            p=4,
-            checkpoint_dir=checkpoint_dir,
-            random_seed=seed
-        )
+        try:
+            res = pipeline(
+                files=files,
+                intra_type='tsfresh',
+                inter_type='distance',
+                transform_type='minmax',
+                model_type='Hierarchical',
+                ranking_type=[ranking],
+                ranking_pfa=None,
+                ensemble_type=None,  # 'condorcet_fuse',
+                search_type=None,
+                train_type='random',
+                train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+                batch_size=500,
+                p=4,
+                checkpoint_dir=checkpoint_dir,
+                random_seed=seed
+            )
+        except:
+            res = {}
         t12 = (datetime.now() - t1)
         print(f'{ranking} w/o S&PFA: {int(t12.total_seconds() / 60)} min\n')
 
