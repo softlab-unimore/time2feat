@@ -128,7 +128,7 @@ def test_feature_selection_pipeline(
         print(f'{ranking} w/o S&PFA: {int(t12.total_seconds() / 60)} min\n')
 
         # Save the current results to a CSV file
-        results[ranking] = res
+        results[f'{ranking} w/o S&PFA'] = res
         pd.DataFrame(results).T.to_csv(results_path, index=True)
 
     # Perform time2feat pipeline with all ranking methods and each ensemble method
