@@ -110,6 +110,8 @@ def mifs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # Note: This method eliminates features that are not important.
     feat_idx, scores, _ = MIFS.mifs(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
+
     return s
 
 
@@ -119,6 +121,8 @@ def mrmr(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     # Note: This method eliminates features that are not important.
     feat_idx, scores, _ = MRMR.mrmr(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
+
     return s
 
 
@@ -130,6 +134,8 @@ def cife(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     df = df[top_features]
     feat_idx, scores, _ = CIFE.cife(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
+
     return s
 
 
@@ -153,6 +159,8 @@ def cmim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     df = df[top_features]
     feat_idx, scores, _ = CMIM.cmim(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
+
     return s
 
 
@@ -164,6 +172,8 @@ def icap(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     df = df[top_features]
     feat_idx, scores, _ = ICAP.icap(X=df.values, y=y)
     s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
+
     return s
 
 
