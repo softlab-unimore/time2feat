@@ -1,4 +1,10 @@
 import os
+import traceback
+
+#os.environ["OMP_NUM_THREADS"] = "1"
+#os.environ["MKL_NUM_THREADS"] = "1"
+#os.environ["OPENBLAS_NUM_THREADS"] = "1"
+
 import argparse
 from datetime import datetime
 
@@ -14,12 +20,12 @@ DATASETS_UCR = [
 # DATASETS_UCR = ['BasicMotions']
 
 RANKING_MAP = {
+    # sparse learning based
+    'SL': ['udfs', 'rfs', 'mcfs', 'ndfs'],
     # information theoretical based
     'IT': ['mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap', 'disr'],
     # similarity based
     'Sim': ['fisher_score', 'laplace_score', 'trace_ratio100', 'trace_ratio'],
-    # sparse learning based
-    'SL': ['rfs', 'mcfs', 'udfs', 'ndfs'],
     # statistical based
     'Stat': ['gini', 'cfs'],
     # Sklearn
@@ -92,6 +98,7 @@ def test_feature_selection_pipeline(
                 random_seed=seed
             )
         except:
+            traceback.print_exc()
             res = {}
         t12 = (datetime.now() - t1)
         print(f'{ranking}: {int(t12.total_seconds() / 60)} min\n')
@@ -123,6 +130,7 @@ def test_feature_selection_pipeline(
                 random_seed=seed
             )
         except:
+            traceback.print_exc()
             res = {}
         t12 = (datetime.now() - t1)
         print(f'{ranking} w/o S&PFA: {int(t12.total_seconds() / 60)} min\n')
@@ -151,6 +159,7 @@ def test_feature_selection_pipeline(
                 checkpoint_dir=checkpoint_dir
             )
         except:
+            traceback.print_exc()
             res = {}
 
         t12 = (datetime.now() - t1)
@@ -181,6 +190,7 @@ def test_feature_selection_pipeline(
                     checkpoint_dir=checkpoint_dir
                 )
             except:
+                traceback.print_exc()
                 res = {}
 
             t12 = (datetime.now() - t1)

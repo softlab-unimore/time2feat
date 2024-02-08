@@ -249,4 +249,5 @@ def cfs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     feat_idx = CFS.cfs(X=df.values, y=y)
     scores = np.ones(len(feat_idx))
     s = rank(scores=list(scores), features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]  # Drop possible duplicated index
     return s

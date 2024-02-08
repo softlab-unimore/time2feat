@@ -40,6 +40,7 @@ def udfs(X, **kwargs):
         gamma = 0.1
     else:
         gamma = kwargs['gamma']
+
     # default k is set to be 5
     if 'k' not in kwargs:
         k = 5
@@ -96,7 +97,10 @@ def construct_M(X, k, gamma):
     for i in range(n_sample):
         Xi = Xt[:, idx_new[i, :]]
         Xi_tilde =np.dot(Xi, H)
-        Bi = np.linalg.inv(np.dot(Xi_tilde.T, Xi_tilde) + gamma*I)
+        try:
+            Bi = np.linalg.inv(np.dot(Xi_tilde.T, Xi_tilde) + gamma*I)
+        except np.linalg.LinAlgError:
+            Bi = np.linalg.pinv(np.dot(Xi_tilde.T, Xi_tilde) + gamma*I)
         Si = np.zeros((n_sample, k+1))
         for q in range(k+1):
             Si[idx_new[q], q] = 1
