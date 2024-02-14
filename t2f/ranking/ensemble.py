@@ -25,7 +25,12 @@ def average(ranks: List[pd.Series]) -> pd.Series:
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0)  # Reapply ranks across the columns (rankers).
 
-    return df_ranks.mean(axis=1)  # Return the mean rank for each feature.
+
+    #vecchia
+    #return df_ranks.mean(axis=1)  # Return the mean rank for each feature.
+
+    #nuova
+    return df_ranks.mean(axis=1).sort_values(ascending=False)  # Return the SORTED rank for each feature.
 
 
 def reciprocal_rank_fusion(ranks: List[pd.Series]) -> pd.Series:
@@ -51,7 +56,7 @@ def reciprocal_rank_fusion(ranks: List[pd.Series]) -> pd.Series:
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0, ascending=False, method="max")  # Reapply ranks across the columns (rankers).
     df_ranks = 1 / (len(df_ranks.index) + df_ranks)
-    return df_ranks.sum(axis=1)  # Return the sum of the reciprocal ranks for each feature.
+    return df_ranks.sum(axis=1).sort_values(ascending=False)  # Return the sum of the reciprocal ranks for each feature.
 
 
 def condorcet_fuse(ranks: List[pd.Series]) -> pd.Series:
@@ -90,7 +95,7 @@ def condorcet_fuse(ranks: List[pd.Series]) -> pd.Series:
     # reconstruct the pandas series based on the sorted features
     df_ranks = pd.Series(np.arange(len(sorted_features)), index=sorted_features)
 
-    return df_ranks
+    return df_ranks.sort_values(ascending=False)
 
 
 def rank_biased_centroid(ranks: List[pd.Series]) -> pd.Series:
@@ -124,7 +129,7 @@ def rank_biased_centroid(ranks: List[pd.Series]) -> pd.Series:
     np_ranks = np.divide(np_ranks, decay)
     df_ranks = pd.Series(np.mean(np_ranks, axis=1), index=df_ranks.index)
 
-    return df_ranks
+    return df_ranks.sort_values(ascending=False)
 
 
 def inverse_square_rank(ranks: List[pd.Series]) -> pd.Series:
@@ -159,7 +164,7 @@ def inverse_square_rank(ranks: List[pd.Series]) -> pd.Series:
     np_ranks = 1/(invrank+1)**2
     df_ranks = pd.Series(np.sum(np_ranks, axis=1), index=df_ranks.index)
 
-    return df_ranks
+    return df_ranks.sort_values(ascending=False)
 
 # other approaches to be considered: references [38, 41, 103] in https://dl.acm.org/doi/pdf/10.1145/3209978.3210186
 
@@ -188,7 +193,7 @@ def combsum(scores: List[pd.Series]) -> pd.Series:
     df_scores = pd.Series(np.nansum(np_scores, axis=1), index=df_scores.index)
 
 
-    return df_scores
+    return df_scores.sort_values(ascending=False)
 
 
 def combmnz(scores: List[pd.Series]) -> pd.Series:
@@ -219,5 +224,5 @@ def combmnz(scores: List[pd.Series]) -> pd.Series:
     df_scores[0] = df_scores[0]*df_scores[1]
     df_scores = pd.Series(df_scores[0])
 
-    return df_scores
+    return df_scores.sort_values(ascending=False)
 
