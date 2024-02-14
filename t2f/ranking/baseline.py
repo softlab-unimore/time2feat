@@ -93,88 +93,89 @@ def trace_ratio(df: pd.DataFrame, y: np.ndarray, style: Literal['fisher', 'lapla
 
 
 def mim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute MIM mutual information based metric. """
     # Note: This method eliminates features that are not important due to PFA.
     top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = MIM.mim(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
     s = s[~s.index.duplicated()]  # Drop possible duplicated index
     return s
 
 
 def mifs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute MIFS mutual information based metric. """
     # Note: This method eliminates features that are not important.
     feat_idx, scores, _ = MIFS.mifs(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
     return s
 
 
 def mrmr(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute MRMR mutual information based metric. """
     # Note: This method eliminates features that are not important.
     feat_idx, scores, _ = MRMR.mrmr(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
     return s
 
 
 def cife(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute CIFE mutual information based metric. """
     # Note: This method eliminates features that are not important also w/o PFA.
     top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = CIFE.cife(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
     return s
 
 
 def jmi(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute JMI mutual information based metric. """
     # Note: This method eliminates features that are not important due to PFA.
     top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = JMI.jmi(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
     s = s[~s.index.duplicated()]  # Drop possible duplicated index
     return s
 
 
 def cmim(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute CMIM mutual information based metric. """
     # Note: This method eliminates features that are not important also w/o PFA.
     top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = CMIM.cmim(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
     return s
 
 
 def icap(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute ICAP mutual information based metric. """
     # Note: This method eliminates features that are not important also w/o PFA.
     top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = ICAP.icap(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
+    s = s[~s.index.duplicated()]
     return s
 
 
 def disr(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
-    # ToDO FDB: check rank and score order
     """ Compute DISR mutual information based metric. """
     # Note: This method eliminates features that are not important due to PFA.
     top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
     feat_idx, scores, _ = DISR.disr(X=df.values, y=y)
-    s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    # s = rank(scores=np.arange(1, len(feat_idx) + 1)[::-1], features=df.columns.values[feat_idx])
+    s = rank(scores=scores, features=df.columns.values[feat_idx])
     s = s[~s.index.duplicated()]  # Drop possible duplicated index
     return s
 

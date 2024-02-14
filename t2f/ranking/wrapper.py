@@ -21,7 +21,6 @@ class Ranker(object):
                        no ensemble method is used.
     """
 
-    NO_SCORE = ['mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap', 'disr']
     RANKER_MAPPING: Dict[str, Callable[[pd.DataFrame, np.ndarray], pd.Series]] = {
         'anova': anova,
         'fisher_score': fisher_score,
@@ -54,11 +53,6 @@ class Ranker(object):
         'combmnz': combmnz
     }
 
-    ENSEMBLE_WITH_SCORE = [
-        'combsum',
-        'combmnz'
-    ]
-
     def __init__(
             self,
             ranking_type: List[str],
@@ -80,9 +74,6 @@ class Ranker(object):
 
         if self.with_ensemble and self.ensemble_type not in self.ENSEMBLE_MAPPING:
             raise ValueError(f"Invalid ensemble type. Valid options are: {list(self.ENSEMBLE_MAPPING.keys())}")
-
-        if ensemble_type in self.ENSEMBLE_WITH_SCORE and np.any([x in self.NO_SCORE for x in self.ranking_type]):
-            raise ValueError(f"Invalid ensemble {ensemble_type}. Only ranker with scores are needed.")
 
         self.rankers = [self.RANKER_MAPPING[x] for x in self.ranking_type]  # Create list of ranker functions
         self.ensembler = self.ENSEMBLE_MAPPING.get(self.ensemble_type, None)  # Get the ensembler function
