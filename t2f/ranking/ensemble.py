@@ -20,6 +20,7 @@ def average(ranks: List[pd.Series]) -> pd.Series:
     Returns:
         A pandas Series representing the average rank across the provided rank Series.
     """
+
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0)  # Reapply ranks across the columns (rankers).
@@ -72,6 +73,7 @@ def condorcet_fuse(ranks: List[pd.Series]) -> pd.Series:
 
 
     """
+
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0)  # Reapply ranks across the columns (rankers).

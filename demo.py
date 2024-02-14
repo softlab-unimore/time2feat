@@ -137,17 +137,18 @@ RANKING = [
 
 if __name__ == '__main__':
     pipeline(
-        files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
+        files=['data/EthanolConcentration_data/EthanolConcentration/EthanolConcentration_TRAIN.ts', 'data/EthanolConcentration_data/EthanolConcentration/EthanolConcentration_TEST.ts'],
         intra_type='tsfresh',
         inter_type='distance',
         transform_type='minmax',
         model_type='Hierarchical',
-        ranking_type=RANKING,
-        ensemble_type='combmnz',  # 'condorcet_fuse',
+        ranking_type=["udfs"],
+        ensemble_type=None,
         train_type='random',
-        train_size=0.3,  # 0.2, 0.3, 0.4, 0.5
+        train_size=0.5,  # 0.2, 0.3, 0.4, 0.5
         batch_size=500,
         p=4,
-        checkpoint_dir='./checkpoint'
+        checkpoint_dir='./checkpoint',
+        random_seed = 42
     )
     print('Hello World!')
