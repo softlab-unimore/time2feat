@@ -191,7 +191,6 @@ def rfs(df: pd.DataFrame, y: np.ndarray, gamma: float = 1) -> pd.Series:
 
 def mcfs(df: pd.DataFrame, y: np.ndarray) -> pd.Series:
     """ Multi-Cluster Feature Selection (MCFS). """
-    # ToDo FDB: why here is used the max instead of sum?
     # Note: This method eliminates features that are not important due to PFA.
     top_features, _ = pfa_scoring(df, PFA_ALPHA)
     df = df[top_features]
