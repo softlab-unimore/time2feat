@@ -98,6 +98,9 @@ class Ranker(object):
         else:
             rank = ranks[0]  # Use the rank from the first ranker
 
+        # Order ranking in descending order
+        rank = rank.sort_values(ascending=False)
+
         # Save and return the ordered ranking
         self.rank = rank.index.values.tolist()
         return self.rank

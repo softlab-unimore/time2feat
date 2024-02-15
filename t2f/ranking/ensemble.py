@@ -4,8 +4,6 @@ import numpy as np
 import functools
 
 
-# ToDo GF: insert other approaches
-
 def average(ranks: List[pd.Series]) -> pd.Series:
     """
     Averages the rank dataframes.
@@ -25,11 +23,7 @@ def average(ranks: List[pd.Series]) -> pd.Series:
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0)  # Reapply ranks across the columns (rankers).
 
-
-    #vecchia
-    #return df_ranks.mean(axis=1)  # Return the mean rank for each feature.
-
-    #nuova
+    # return df_ranks.mean(axis=1)  # Return the mean rank for each feature.
     return df_ranks.mean(axis=1).sort_values(ascending=False)  # Return the SORTED rank for each feature.
 
 
@@ -161,16 +155,16 @@ def inverse_square_rank(ranks: List[pd.Series]) -> pd.Series:
     invrank = np.max(np_ranks, axis=0)
     invrank = invrank - np_ranks
 
-    np_ranks = 1/(invrank+1)**2
+    np_ranks = 1 / (invrank + 1) ** 2
     df_ranks = pd.Series(np.sum(np_ranks, axis=1), index=df_ranks.index)
 
     return df_ranks.sort_values(ascending=False)
+
 
 # other approaches to be considered: references [38, 41, 103] in https://dl.acm.org/doi/pdf/10.1145/3209978.3210186
 
 
 def combsum(scores: List[pd.Series]) -> pd.Series:
-
     """
     sums the scores for each feature.
 
@@ -192,12 +186,10 @@ def combsum(scores: List[pd.Series]) -> pd.Series:
 
     df_scores = pd.Series(np.nansum(np_scores, axis=1), index=df_scores.index)
 
-
     return df_scores.sort_values(ascending=False)
 
 
 def combmnz(scores: List[pd.Series]) -> pd.Series:
-
     """
     sums the scores for each feature and weights the score by the occurrence of each feature.
 
@@ -221,8 +213,7 @@ def combmnz(scores: List[pd.Series]) -> pd.Series:
 
     df_weights = pd.Series((~np.isnan(np_scores)).sum(axis=1), index=df_scores.index)
     df_scores = pd.concat([df_scores, df_weights], axis=1)
-    df_scores[0] = df_scores[0]*df_scores[1]
+    df_scores[0] = df_scores[0] * df_scores[1]
     df_scores = pd.Series(df_scores[0])
 
     return df_scores.sort_values(ascending=False)
-

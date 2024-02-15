@@ -38,6 +38,8 @@ ENSEMBLE = [
     'condorcet_fuse',
     'rank_biased_centroid',
     'inverse_square_rank',
+    'combsum',
+    'combmnz'
 ]
 
 
