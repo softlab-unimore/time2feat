@@ -4,7 +4,7 @@ import numpy as np
 import functools
 
 
-def average(ranks: List[pd.Series]) -> pd.Series:
+def average(scores: List[pd.Series]) -> pd.Series:
     """
     Averages the rank dataframes.
 
@@ -13,11 +13,13 @@ def average(ranks: List[pd.Series]) -> pd.Series:
     re-applies the ranking, and then computes the mean rank for each feature.
 
     Args:
-        ranks: List of pandas Series, where each series represents feature ranks.
+        scores: List of pandas Series, where each series represents feature scores.
 
     Returns:
         A pandas Series representing the average rank across the provided rank Series.
     """
+
+    ranks = [s.rank(ascending=False) for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
@@ -27,7 +29,7 @@ def average(ranks: List[pd.Series]) -> pd.Series:
     return df_ranks.mean(axis=1).sort_values(ascending=False)  # Return the SORTED rank for each feature.
 
 
-def reciprocal_rank_fusion(ranks: List[pd.Series]) -> pd.Series:
+def reciprocal_rank_fusion(scores: List[pd.Series]) -> pd.Series:
     """
     Averages the rank dataframes.
 
@@ -39,13 +41,15 @@ def reciprocal_rank_fusion(ranks: List[pd.Series]) -> pd.Series:
     learning methods. In Proceedings of SIGIR. 758–759. https://doi.org/10.1145/1571941.1572114
 
     Args:
-        ranks: List of pandas Series, where each series represents feature ranks.
+        scores: List of pandas Series, where each series represents feature scores.
 
     Returns:
         A pandas Series representing the average rank across the provided rank Series.
 
 
     """
+    ranks = [s.rank(ascending=False) for s in scores]
+
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0, ascending=False, method="max")  # Reapply ranks across the columns (rankers).
@@ -53,7 +57,7 @@ def reciprocal_rank_fusion(ranks: List[pd.Series]) -> pd.Series:
     return df_ranks.sum(axis=1).sort_values(ascending=False)  # Return the sum of the reciprocal ranks for each feature.
 
 
-def condorcet_fuse(ranks: List[pd.Series]) -> pd.Series:
+def condorcet_fuse(scores: List[pd.Series]) -> pd.Series:
     """
     Averages the rank dataframes.
 
@@ -65,13 +69,14 @@ def condorcet_fuse(ranks: List[pd.Series]) -> pd.Series:
     In Proceedings of CIKM. 538–548. https://doi.org/10.1145/584792.584881
 
     Args:
-        ranks: List of pandas Series, where each series represents feature ranks.
+        scores: List of pandas Series, where each series represents feature scores.
 
     Returns:
         A pandas Series representing the condorcet fuse across the provided rank Series.
 
 
     """
+    ranks = [s.rank(ascending=False) for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
@@ -92,7 +97,7 @@ def condorcet_fuse(ranks: List[pd.Series]) -> pd.Series:
     return df_ranks.sort_values(ascending=False)
 
 
-def rank_biased_centroid(ranks: List[pd.Series]) -> pd.Series:
+def rank_biased_centroid(scores: List[pd.Series]) -> pd.Series:
     """
     Averages the rank dataframes.
 
@@ -104,13 +109,15 @@ def rank_biased_centroid(ranks: List[pd.Series]) -> pd.Series:
     Proceedings SIGIR. https://doi.org/10.1145/3077136.3080839
 
     Args:
-        ranks: List of pandas Series, where each series represents feature ranks.
+        scores: List of pandas Series, where each series represents feature scores.
 
     Returns:
         A pandas Series representing the rank biased centroid across the provided rank Series.
 
 
     """
+    ranks = [s.rank(ascending=False) for s in scores]
+
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0, method="max")  # Reapply ranks across the columns (rankers).
@@ -126,7 +133,7 @@ def rank_biased_centroid(ranks: List[pd.Series]) -> pd.Series:
     return df_ranks.sort_values(ascending=False)
 
 
-def inverse_square_rank(ranks: List[pd.Series]) -> pd.Series:
+def inverse_square_rank(scores: List[pd.Series]) -> pd.Series:
     """
     Averages the rank dataframes.
 
@@ -140,13 +147,15 @@ def inverse_square_rank(ranks: List[pd.Series]) -> pd.Series:
     content-based multimedia indexing (CBMI) (pp. 1-6). IEEE. 10.1109/CBMI.2014.6849825.
 
     Args:
-        ranks: List of pandas Series, where each series represents feature ranks.
+        scores: List of pandas Series, where each series represents feature scores.
 
     Returns:
         A pandas Series representing the inverse square rank across the provided rank Series.
 
 
     """
+    ranks = [s.rank(ascending=False) for s in scores]
+
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0, method="max")  # Reapply ranks across the columns (rankers).
