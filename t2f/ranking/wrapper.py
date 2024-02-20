@@ -1,8 +1,6 @@
-from typing import Dict, List, Literal, Optional, Callable
+from typing import Dict, Optional, Callable
 import time
 
-import numpy as np
-import pandas as pd
 from tqdm import tqdm
 
 from .baseline import anova, fisher_score, laplace_score, trace_ratio, trace_ratio100, mim, mifs, mrmr, cife, jmi, \
