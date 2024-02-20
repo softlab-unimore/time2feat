@@ -22,11 +22,11 @@ def average(scores: List[pd.Series]) -> pd.Series:
     ranks = [s.rank(ascending=False) for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
-    df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
+    #df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0)  # Reapply ranks across the columns (rankers).
 
     # return df_ranks.mean(axis=1)  # Return the mean rank for each feature.
-    return df_ranks.mean(axis=1).sort_values(ascending=False)  # Return the SORTED rank for each feature.
+    return (1/(df_ranks.mean(axis=1))).sort_values(ascending=False)  # Return the SORTED rank for each feature.
 
 
 def reciprocal_rank_fusion(scores: List[pd.Series]) -> pd.Series:
@@ -51,8 +51,8 @@ def reciprocal_rank_fusion(scores: List[pd.Series]) -> pd.Series:
     ranks = [s.rank(ascending=False) for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
-    df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
-    df_ranks = df_ranks.rank(axis=0, ascending=False, method="max")  # Reapply ranks across the columns (rankers).
+    df_ranks = df_ranks.fillna(float('inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
+    df_ranks = df_ranks.rank(axis=0, method="max")  # Reapply ranks across the columns (rankers).
     df_ranks = 1 / (len(df_ranks.index) + df_ranks)
     return df_ranks.sum(axis=1).sort_values(ascending=False)  # Return the sum of the reciprocal ranks for each feature.
 
@@ -76,11 +76,11 @@ def condorcet_fuse(scores: List[pd.Series]) -> pd.Series:
 
 
     """
-    ranks = [s.rank(ascending=False) for s in scores]
+    ranks = [s.rank() for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
     df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
-    df_ranks = df_ranks.rank(axis=0)  # Reapply ranks across the columns (rankers).
+    df_ranks = df_ranks.rank(axis=0, ascending=False, method="max")  # Reapply ranks across the columns (rankers).
 
     def _condorcet_comparison(f1: str, f2: str) -> int:
         # check if f1 has been ranked above f2 more than half of the times. In that case, put f1 above f2.
@@ -92,7 +92,7 @@ def condorcet_fuse(scores: List[pd.Series]) -> pd.Series:
     sorted_features = sorted(df_ranks.index.to_list(), key=functools.cmp_to_key(_condorcet_comparison))
 
     # reconstruct the pandas series based on the sorted features
-    df_ranks = pd.Series(np.arange(len(sorted_features)), index=sorted_features)
+    df_ranks = pd.Series(len(sorted_features) - np.arange(len(sorted_features)), index=sorted_features)
 
     return df_ranks.sort_values(ascending=False)
 
@@ -119,16 +119,16 @@ def rank_biased_centroid(scores: List[pd.Series]) -> pd.Series:
     ranks = [s.rank(ascending=False) for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
-    df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
-    df_ranks = df_ranks.rank(axis=0, method="max")  # Reapply ranks across the columns (rankers).
+    df_ranks = df_ranks.fillna(float('inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
+    df_ranks = df_ranks.rank(axis=0, ascending=False, method="max")  # Reapply ranks across the columns (rankers).
 
     persistence = 0.98
     np_ranks = np.array(df_ranks)
     invrank = np.max(np_ranks, axis=0)
     invrank = invrank - np_ranks
     decay = (1 - persistence) * persistence ** (invrank)
-    np_ranks = np.divide(np_ranks, decay)
-    df_ranks = pd.Series(np.mean(np_ranks, axis=1), index=df_ranks.index)
+    #np_ranks = np.divide(np_ranks, decay)
+    df_ranks = pd.Series(np.sum(decay, axis=1), index=df_ranks.index)
 
     return df_ranks.sort_values(ascending=False)
 
@@ -157,15 +157,13 @@ def inverse_square_rank(scores: List[pd.Series]) -> pd.Series:
     ranks = [s.rank(ascending=False) for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
-    df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
-    df_ranks = df_ranks.rank(axis=0, method="max")  # Reapply ranks across the columns (rankers).
 
     np_ranks = np.array(df_ranks)
-    invrank = np.max(np_ranks, axis=0)
-    invrank = invrank - np_ranks
 
-    np_ranks = 1 / (invrank + 1) ** 2
-    df_ranks = pd.Series(np.sum(np_ranks, axis=1), index=df_ranks.index)
+    np_ranks = 1 / (np_ranks + 1) ** 2
+    N = np.sum(~np.isnan(np_ranks), axis=1)
+    np_ranks = np.multiply(N, np.nansum(np_ranks, axis=1))
+    df_ranks = pd.Series(np_ranks, index=df_ranks.index)
 
     return df_ranks.sort_values(ascending=False)
 

@@ -137,13 +137,13 @@ RANKING = [
 
 if __name__ == '__main__':
     pipeline(
-        files=['data/EthanolConcentration_data/EthanolConcentration/EthanolConcentration_TRAIN.ts', 'data/EthanolConcentration_data/EthanolConcentration/EthanolConcentration_TEST.ts'],
+        files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
         intra_type='tsfresh',
         inter_type='distance',
         transform_type='minmax',
         model_type='Hierarchical',
-        ranking_type=["udfs"],
-        ensemble_type=None,
+        ranking_type=["anova", "mim"],
+        ensemble_type="inverse_square_rank",
         train_type='random',
         train_size=0.5,  # 0.2, 0.3, 0.4, 0.5
         batch_size=500,
