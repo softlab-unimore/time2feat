@@ -89,6 +89,16 @@ class Ranker(object):
         time.sleep(0.1)  # Small sleep for tqdm robustness
         for i, ranker in tqdm(enumerate(self.rankers)):
             rank = ranker(df.copy(), np.array(y).copy())  # Get the rank from each ranker
+            if len(rank[rank.index.duplicated(keep=False)])>0:
+                # Duplicates have been found: check if the have all the same value
+                duprank = rank[rank.index.duplicated(keep=False)]
+                duprank = duprank.reset_index().rename({"index": "feature_name", 0: "values"}, axis=1)
+                diversedups = duprank.groupby("feat_name").nunique()
+                feats_with_diff_values = diversedups[diversedups.values > 1].index
+                if len(feats_with_diff_values)>0:
+                    print("WARNING: found duplicates with different values for the same feature")
+                    print(duprank)
+            rank = rank[~rank.index.duplicated()]
             rank.name = self.ranking_type[i]  # Name the rank series for identification
             ranks.append(rank)  # Append the rank to the list
 
