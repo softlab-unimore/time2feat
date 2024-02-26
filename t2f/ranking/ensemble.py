@@ -22,11 +22,11 @@ def average(scores: List[pd.Series]) -> pd.Series:
     ranks = [s.rank(ascending=False) for s in scores]
 
     df_ranks = pd.concat(ranks, axis=1)  # Combine all rank Series into a DataFrame.
-    #df_ranks = df_ranks.fillna(float('-inf'))  # Replace NaNs with negative infinity to exclude them from ranking.
+    # df_ranks = df_ranks.fillna(float('inf'))  # Replace NaNs with positive infinity to exclude them from ranking.
     df_ranks = df_ranks.rank(axis=0)  # Reapply ranks across the columns (rankers).
 
     # return df_ranks.mean(axis=1)  # Return the mean rank for each feature.
-    return (1/(df_ranks.mean(axis=1))).sort_values(ascending=False)  # Return the SORTED rank for each feature.
+    return (1 / (df_ranks.mean(axis=1))).sort_values(ascending=False)  # Return the SORTED rank for each feature.
 
 
 def reciprocal_rank_fusion(scores: List[pd.Series]) -> pd.Series:
@@ -37,8 +37,9 @@ def reciprocal_rank_fusion(scores: List[pd.Series]) -> pd.Series:
     concatenates them into a dataframe, replaces NaN values with negative infinity,
     re-applies the (inverse) ranking, and then computes the reciprocal rank fusion for each feature.
 
-    Based on: Gordon V. Cormack, Charles L A Clarke, and Stefan Buettcher. 2009. Reciprocal rank fusion outperforms condorcet and individual rank
-    learning methods. In Proceedings of SIGIR. 758–759. https://doi.org/10.1145/1571941.1572114
+    Based on: Gordon V. Cormack, Charles L A Clarke, and Stefan Buettcher. 2009.
+    Reciprocal rank fusion outperforms condorcet and individual rank learning methods.
+    In Proceedings of SIGIR. 758–759. https://doi.org/10.1145/1571941.1572114
 
     Args:
         scores: List of pandas Series, where each series represents feature scores.
@@ -105,8 +106,9 @@ def rank_biased_centroid(scores: List[pd.Series]) -> pd.Series:
     concatenates them into a dataframe, replaces NaN values with negative infinity,
     and computes the rank biased centroid ranking for each feature.
 
-    Based on: Peter Bailey, Alistair Moffat, Falk Scholer, and Paul Thomas. 2017. Retrieval Consistency in the Presence of Query Variations. In
-    Proceedings SIGIR. https://doi.org/10.1145/3077136.3080839
+    Based on: Peter Bailey, Alistair Moffat, Falk Scholer, and Paul Thomas. 2017.
+    Retrieval Consistency in the Presence of Query Variations.
+    In Proceedings SIGIR. https://doi.org/10.1145/3077136.3080839
 
     Args:
         scores: List of pandas Series, where each series represents feature scores.
@@ -126,8 +128,8 @@ def rank_biased_centroid(scores: List[pd.Series]) -> pd.Series:
     np_ranks = np.array(df_ranks)
     invrank = np.max(np_ranks, axis=0)
     invrank = invrank - np_ranks
-    decay = (1 - persistence) * persistence ** (invrank)
-    #np_ranks = np.divide(np_ranks, decay)
+    decay = (1 - persistence) * persistence ** invrank
+    # np_ranks = np.divide(np_ranks, decay)
     df_ranks = pd.Series(np.sum(decay, axis=1), index=df_ranks.index)
 
     return df_ranks.sort_values(ascending=False)
@@ -141,9 +143,11 @@ def inverse_square_rank(scores: List[pd.Series]) -> pd.Series:
     concatenates them into a dataframe, replaces NaN values with negative infinity,
     and computes the inverse square rank for each feature.
 
-    Based on: Mourao, A., Martins, F. and Magalhaes, J., 2013. NovaSearch at TREC 2013 Federated Web Search Track: Experiments with rank fusion.
+    Based on: Mourao, A., Martins, F. and Magalhaes, J., 2013.
+    NovaSearch at TREC 2013 Federated Web Search Track: Experiments with rank fusion.
     In TREC. https://trec.nist.gov/pubs/trec22/papers/novasearch-federated.pdf
-    Mourão, A., Martins, F. and Magalhaes, J., 2014, June. Inverse square rank fusion for multimodal search. In 2014 12th international workshop on
+    Mourão, A., Martins, F. and Magalhaes, J., 2014, June.
+    Inverse square rank fusion for multimodal search. In 2014 12th international workshop on
     content-based multimedia indexing (CBMI) (pp. 1-6). IEEE. 10.1109/CBMI.2014.6849825.
 
     Args:

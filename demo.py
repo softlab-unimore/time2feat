@@ -130,9 +130,9 @@ def pipeline(
 
 
 RANKING = [
-    'anova', 'fisher_score'  # , 'laplace_score', 'trace_ratio100', 'trace_ratio',
-    # 'mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap',  'disr',
-    # 'rfs', 'mcfs', 'udfs', 'ndfs', 'gini', 'cfs'
+    'anova', 'fisher_score'  'laplace_score', 'trace_ratio100', 'trace_ratio',
+    'mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap',  'disr',
+    'rfs', 'mcfs', 'udfs', 'ndfs', 'gini', 'cfs'
 ]
 
 if __name__ == '__main__':
@@ -143,12 +143,12 @@ if __name__ == '__main__':
         transform_type='minmax',
         model_type='Hierarchical',
         ranking_type=["anova", "mim"],
-        ensemble_type="inverse_square_rank",
+        ensemble_type="average",
         train_type='random',
         train_size=0.5,  # 0.2, 0.3, 0.4, 0.5
         batch_size=500,
         p=4,
         checkpoint_dir='./checkpoint',
-        random_seed = 42
+        random_seed=42
     )
     print('Hello World!')
