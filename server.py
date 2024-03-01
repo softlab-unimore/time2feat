@@ -17,8 +17,10 @@ DATASETS_UCR = [
     'EthanolConcentration', 'HandMovementDirection', 'Handwriting', 'Libras', 'RacketSports', 'SelfRegulationSCP1',
     'SelfRegulationSCP2', 'StandWalkJump', 'UWaveGestureLibrary', 'LSST', 'PenDigits', 'PhonemeSpectra'
 ]
-# DATASETS_UCR = ['BasicMotions']
+DATASETS_UCR = ['BasicMotions']
 
+
+# anova, fisher_score, trace_ratio100, trace_ratio, mim,
 RANKING_MAP = {
     # sparse learning based
     'SL': ['udfs', 'rfs', 'mcfs', 'ndfs'],
@@ -210,19 +212,17 @@ def main():
 
     for dataset in DATASETS_UCR:
         print(f'\n{dataset}')
-        dataset_dir = os.path.join(data_dir, dataset)
 
-        if not os.path.isdir(dataset_dir):
-            print('No dataset')
+        if not os.path.isdir(os.path.join(data_dir, dataset)):
+            print(f'{dataset} does not exist')
             continue
 
-        files = [os.path.join(dataset_dir, x) for x in os.listdir(dataset_dir) if x.endswith('.ts')]
+        files = [
+            os.path.join(data_dir, dataset, f'{dataset}_TEST.ts'),
+            os.path.join(data_dir, dataset, f'{dataset}_TRAIN.ts'),
+        ]
 
-        if len(files) != 2:
-            print('No train and test files in dataset directory')
-            continue
-
-        for train_size in [0.2, 0.3, 0.5]:
+        for train_size in [0.2, 0.3, 0.4, 0.5]:
             _ = test_feature_selection_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
 
 

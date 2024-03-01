@@ -10,8 +10,8 @@ from .reader import load_from_tsfile_to_dataframe
 def read_ucr_mts(path: str) -> Tuple[List[np.ndarray], list]:
     """ Wrapper for sktime load_from_tsfile_to_dataframe function """
     # Check mts existence
-    if not os.path.isfile:
-        raise ValueError(f"THe multivariate time-series file doesn't exist: {path}")
+    if not os.path.isfile(path):
+        raise ValueError(f"The multivariate time-series file doesn't exist: {path}")
 
     # Read multivariate time series (mts)
     df, y = load_from_tsfile_to_dataframe(path)

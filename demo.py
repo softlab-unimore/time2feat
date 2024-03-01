@@ -15,7 +15,7 @@ from t2f.model.clustering import ClusterWrapper, cluster_metrics
 
 def build_feat_path(checkpoint_dir, ts_files):
     # Constructs the feature file path from the checkpoint directory and time series files
-    files_name = "_".join([os.path.basename(x) for x in sorted(ts_files)]) + '.pickle'
+    files_name = "_".join([os.path.basename(x) for x in ts_files]) + '.pickle'
     return os.path.join(checkpoint_dir, files_name)
 
 
@@ -81,7 +81,7 @@ def pipeline(
 ) -> dict:
     # Simple consistency check
     if [x for x in files if not os.path.isfile(x)]:
-        raise ValueError('At least on time-series path don\'t exist')
+        raise ValueError('At least on time-series path does not exist')
     if train_size < 0 or train_size > 1:
         raise ValueError('Train size must be between 0 and 1')
 
@@ -137,7 +137,7 @@ RANKING = [
 
 if __name__ == '__main__':
     pipeline(
-        files=['data/BasicMotions/BasicMotions_TRAIN.txt', 'data/BasicMotions/BasicMotions_TEST.txt'],
+        files=['data/BasicMotions/BasicMotions_TEST.txt', 'data/BasicMotions/BasicMotions_TRAIN.txt'],
         intra_type='tsfresh',
         inter_type='distance',
         transform_type='minmax',
