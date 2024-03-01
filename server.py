@@ -17,7 +17,7 @@ DATASETS_UCR = [
     'EthanolConcentration', 'HandMovementDirection', 'Handwriting', 'Libras', 'RacketSports', 'SelfRegulationSCP1',
     'SelfRegulationSCP2', 'StandWalkJump', 'UWaveGestureLibrary', 'LSST', 'PenDigits', 'PhonemeSpectra'
 ]
-DATASETS_UCR = ['BasicMotions']
+# DATASETS_UCR = ['BasicMotions']
 
 
 # anova, fisher_score, trace_ratio100, trace_ratio, mim,
