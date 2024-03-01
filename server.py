@@ -176,6 +176,9 @@ def test_feature_selection_pipeline(
     # Perform time2feat pipeline based on ranking method groups and all ensemble methods
     for ensemble in ENSEMBLE:
         for k, ranking in RANKING_MAP.items():
+            if len(ranking) < 2:
+                continue
+
             print(f'\n{ensemble} {ranking}')
             t1 = datetime.now()
             try:
