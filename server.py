@@ -19,8 +19,6 @@ DATASETS_UCR = [
 ]
 # DATASETS_UCR = ['BasicMotions']
 
-
-# anova, fisher_score, trace_ratio100, trace_ratio, mim,
 RANKING_MAP = {
     # sparse learning based
     'SL': ['udfs', 'rfs', 'mcfs', 'ndfs'],
@@ -33,6 +31,14 @@ RANKING_MAP = {
     # Sklearn
     'SK': ['anova']
 }
+
+ENSEMBLE_RANKING = {
+    'ALL': [val for arr in RANKING_MAP.values() for val in arr],
+    'SimSK': ['anova', 'fisher_score', 'laplace_score', 'trace_ratio100', 'trace_ratio'],
+    'Top3': ['anova', 'fisher_score', 'trace_ratio100'],
+    'Top5': ['anova', 'fisher_score', 'trace_ratio100', 'trace_ratio', 'gini'],
+}
+
 
 ENSEMBLE = [
     'average',
@@ -175,7 +181,7 @@ def test_feature_selection_pipeline(
 
     # Perform time2feat pipeline based on ranking method groups and all ensemble methods
     for ensemble in ENSEMBLE:
-        for k, ranking in RANKING_MAP.items():
+        for k, ranking in ENSEMBLE_RANKING.items():
             if len(ranking) < 2:
                 continue
 
@@ -225,7 +231,7 @@ def main():
             os.path.join(data_dir, dataset, f'{dataset}_TRAIN.ts'),
         ]
 
-        for train_size in [0.2, 0.3, 0.4, 0.5]:
+        for train_size in [0.2, 0.3, 0.5]:
             _ = test_feature_selection_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
 
 
