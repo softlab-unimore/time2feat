@@ -30,23 +30,24 @@ def cluster_metrics(y_true: np.array, y_pred: np.array):
     }
 
 
+# def _normalize(x: np.array):
+#     x_mean = np.mean(x, axis=1, keepdims=True)
+#     x_std = np.std(x, axis=1, keepdims=True)
+#
+#     x = (x - x_mean) / x_std
+#     return x
+
+
 class ClusterWrapper(object):
     """ Wrapper for several clustering algorithms """
 
-    def __init__(self, n_clusters: int, model_type: str, transform_type: str = None, normalize: bool = False):
+    def __init__(self, n_clusters: int, model_type: str, transform_type: str = None):
         self.num_cluster = n_clusters
         self.model_type = model_type
-        self.normalize = normalize
+        # self.normalize = False
 
         self.model = _define_model(model_type, n_clusters)
         self.transform_type = transform_type
-
-    def _normalize(self, x: np.array):
-        x_mean = np.mean(x, axis=1, keepdims=True)
-        x_std = np.std(x, axis=1, keepdims=True)
-
-        x = (x - x_mean) / x_std
-        return x
 
     def remove_nan(self, x: np.array):
         if len(x.shape) == 2:
@@ -61,11 +62,12 @@ class ClusterWrapper(object):
         return x
 
     def fit_predict(self, x: np.array):
+        assert x.ndim == 2, 'Input data must be 2D'
         x = self.remove_nan(x)
-        if self.normalize:
-            x = self._normalize(x)
-        elif self.transform_type:
+        # if self.normalize:
+        #     x = self._normalize(x)
+        if self.transform_type:
             transformer = get_transformer(self.transform_type)
             x = transformer.fit_transform(x)
-        x = x.reshape((len(x), -1))
+        # x = x.reshape((len(x), -1))
         return self.model.fit_predict(x)

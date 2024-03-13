@@ -70,9 +70,9 @@ def simple_grid_search(
 
     # Convert results to DataFrame and calculate mean NMI score
     df_res = pd.DataFrame(results).fillna('None')  # Because transform_type could be None
-    df_res = df_res.groupby(['top_k', 'with_separate_domains', 'transform_type'])['nmi'].mean()
+    df_res = df_res.groupby(['top_k', 'with_separate_domains', 'transform_type'])['nmi'].mean().reset_index()
     df_res = df_res.replace(['None'], [None])  # Replace 'None' with None
-    df_res.sort_values('nmi', ascending=False, inplace=True)
+    df_res = df_res.sort_values('nmi', ascending=False)
 
     # Return the top_k value with the highest mean NMI score
     return df_res['top_k'].iloc[0], df_res['with_separate_domains'].iloc[0], df_res['transform_type'].iloc[0]
