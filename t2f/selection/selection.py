@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple
 import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
 
@@ -31,7 +31,7 @@ def supervised_selection(
         ensemble_type: Optional[str] = None,
         pfa_variance: Optional[float] = 0.9,
         search_type: Optional[Literal['fixed', 'linear']] = None,
-) -> List[str]:
+) -> Tuple[List[str], str]:
     # Extract train and test records, with label associated with train data
     train_idx = list(labels.keys())
     test_idx = [i for i in range(len(df)) if i not in train_idx]
@@ -46,7 +46,7 @@ def supervised_selection(
     ranker = Ranker(ranking_type=ranking_type, ensemble_type=ensemble_type, pfa_variance=pfa_variance)
     ranker.ranking(df=df_train, y=y_train)
 
-    top_k = search(
+    top_k, with_separate_domains, transform_type = search(
         ranker=ranker,
         df_train=df_train,
         y_train=y_train,
@@ -56,9 +56,9 @@ def supervised_selection(
         search_type=search_type
     )
 
-    top_features = ranker.select(df=df_train, top_k=top_k)
+    top_features = ranker.select(df=df_train, top_k=top_k, with_separate_domains=with_separate_domains)
 
-    return top_features
+    return top_features, transform_type
 
 
 def unsupervised_selection(df: pd.DataFrame, variance: Optional[float] = 0.9) -> List[str]:
@@ -78,28 +78,31 @@ def feature_selection(
         ensemble_type: str = None,
         search_type: Optional[Literal['fixed', 'linear']] = 'fixed',
         context: dict = None,
-) -> List[str]:
-    if labels and ('model_type' not in context or 'transform_type' not in context):
-        s = 'When labels are provided, the context must contain both "model_type" and "transform_type" keys.'
+) -> Tuple[List[str], str]:
+    if 'transform_type' not in context:
+        raise ValueError('The context must contain a "transform_type" key.')
+    if labels and 'model_type' not in context:
+        s = 'When labels are provided, the context must contain both "model_type" keys.'
         raise ValueError(s)
     if labels and not ranking_type:
         raise ValueError('You must select at least one feature ranking method when labels are provided.')
     if labels and ranking_type and len(ranking_type) > 1 and not ensemble_type:
         raise ValueError('When multiple ranking methods are specified, you must also specify an ensemble method.')
 
+    transform_type = context['transform_type']
     df = cleaning(df)
 
     if labels:
-        top_features = supervised_selection(
+        top_features, transform_type = supervised_selection(
             df=df,
             labels=labels,
             ranking_type=ranking_type,
             pfa_variance=pfa_variance,
             model_type=context['model_type'],
-            transform_type=context['transform_type'],
+            transform_type=transform_type,
             ensemble_type=ensemble_type,
             search_type=search_type,
         )
     else:
         top_features = unsupervised_selection(df, variance=pfa_variance)
-    return top_features
+    return top_features, transform_type

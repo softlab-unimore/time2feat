@@ -119,16 +119,45 @@ class Ranker(object):
         self.rank = rank.index.values.tolist()
         return self.rank
 
-    def select(self, df: pd.DataFrame, top_k: int) -> list:
+    def separate_ranks_with_domains(self) -> List[List[str]]:
+        # Separate the rank into domains
+        domains = [x.split('__', 1)[0] for x in self.rank]
+        unique_domains = list(set(domains))
+        # Initialize the list of separate ranks
+        separate_ranks = []
+        # Iterate over the unique domains
+        for domain in unique_domains:
+            # Select the features from the domain
+            domain_features = [x for x in self.rank if x.split('__', 1)[0] == domain]
+            # Append the domain features to the list
+            separate_ranks.append(domain_features)
+
+        return separate_ranks
+
+    def select(self, df: pd.DataFrame, top_k: int, with_separate_domains: bool = False) -> list:
         if not self.rank:
             raise ValueError('Impossible select the top features without computing the ranking')
-        # Select the top_k features based on precomputed rank
-        top_feats = self.rank[: top_k]
 
-        if self.pfa_variance:
-            # Apply PFA to further select features that retain most information
-            top_features, _ = pfa_scoring(df[top_feats], self.pfa_variance)
+        if with_separate_domains:
+            # If separate domains are requested, use the separate domains
+            ranks_list = self.separate_ranks_with_domains()
         else:
-            top_features = top_feats
+            # If no separate domains are requested, use the full rank
+            ranks_list = [self.rank]
+
+        # Initialize the list of top features
+        top_features = []
+        # Iterate over the ranks
+        for rank in ranks_list:
+            # Select the top_k features based on precomputed rank
+            tf_raw = rank[:top_k]
+
+            if self.pfa_variance:
+                # Apply PFA to further select features that retain most information
+                tf, _ = pfa_scoring(df[tf_raw], self.pfa_variance)
+            else:
+                tf = tf_raw
+
+            top_features += tf
 
         return top_features  # Return the list of top features

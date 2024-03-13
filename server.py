@@ -39,7 +39,6 @@ ENSEMBLE_RANKING = {
     'Top5': ['anova', 'fisher_score', 'trace_ratio100', 'trace_ratio', 'gini'],
 }
 
-
 ENSEMBLE = [
     'average',
     'reciprocal_rank_fusion',
@@ -147,36 +146,6 @@ def test_feature_selection_pipeline(
 
         # Save the current results to a CSV file
         results[f'{ranking} w/o S&PFA'] = res
-        pd.DataFrame(results).T.to_csv(results_path, index=True)
-
-    # Perform time2feat pipeline with all ranking methods and each ensemble method
-    for ensemble in ENSEMBLE:
-        print(f'\n{ensemble}')
-        t1 = datetime.now()
-        try:
-            res = pipeline(
-                files=files,
-                intra_type='tsfresh',
-                inter_type='distance',
-                transform_type='minmax',
-                model_type='Hierarchical',
-                ranking_type=ranking_methods,
-                ensemble_type=ensemble,  # 'condorcet_fuse',
-                train_type='random',
-                train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
-                batch_size=500,
-                p=4,
-                checkpoint_dir=checkpoint_dir
-            )
-        except:
-            traceback.print_exc()
-            res = {}
-
-        t12 = (datetime.now() - t1)
-        print(f'{ensemble}: {int(t12.total_seconds() / 60)} min\n')
-
-        # Save the current results to a CSV file
-        results[ensemble] = res
         pd.DataFrame(results).T.to_csv(results_path, index=True)
 
     # Perform time2feat pipeline based on ranking method groups and all ensemble methods

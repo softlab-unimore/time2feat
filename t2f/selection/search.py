@@ -1,4 +1,4 @@
-from typing import Optional, Literal
+from typing import Optional, Literal, Tuple
 import time
 import pandas as pd
 from tqdm import tqdm
@@ -15,13 +15,14 @@ def simple_grid_search(
         df_all: pd.DataFrame,
         model_type: str,
         transform_type: str = None,
-) -> int:
+) -> Tuple[int, bool, str]:
     """Performs a simple grid search over a set of parameters to find the optimal number of top features.
 
     This function takes a ranking object which is used to rank and select features from the training data. It then
     iterates over a predefined grid of parameters, each time fitting a clustering model on all data with the selected
-    top features, and computing clustering metrics. The function returns the number of top features that resulted in
-    the highest mean Normalized Mutual Information (NMI) score.
+    top features, and computing clustering metrics. The function returns the best parameters based on the highest mean
+    NMI score.
+
 
     Args:
         ranker: An instance of a Ranker class with ranking and select methods.
@@ -33,6 +34,8 @@ def simple_grid_search(
 
     Returns:
         An integer representing the optimal number of top features that resulted in the highest mean NMI score.
+        A boolean indicating whether to use separate domains for feature selection.
+        A string indicating the optimal transformation type to use.
 
     """
     # # Rank features using the ranking object
@@ -40,19 +43,23 @@ def simple_grid_search(
 
     # Define grid parameters
     grid_params = {
-        'top_k': [10, 25, 50, 100, 200, 300] * 2
+        'top_k': [10, 25, 50, 100, 200, 300] * 2,
+        'with_separate_domains': [True, False],
+        'transform_type': ['minmax', 'standard', None],
     }
 
     results = []
     time.sleep(0.1)  # Small sleep for tqdm robustness
     for new_params in tqdm(ParameterGrid(grid_params)):
         # Select top K features
-        top_features = ranker.select(df=df_train, top_k=new_params['top_k'])
+        top_features = ranker.select(df=df_train, top_k=new_params['top_k'],
+                                     with_separate_domains=new_params['with_separate_domains'])
 
         # Determine the number of unique labels
         num_labels = len(set(y_train))
         # Initialize the cluster wrapper with the model and transformation types
-        model = ClusterWrapper(model_type=model_type, transform_type=transform_type, n_clusters=num_labels)
+        model = ClusterWrapper(model_type=model_type, transform_type=new_params['transform_type'],
+                               n_clusters=num_labels)
         # Fit and predict the model
         y_pred = model.fit_predict(df_all[top_features])
 
@@ -62,18 +69,13 @@ def simple_grid_search(
         results.append(res_metrics)
 
     # Convert results to DataFrame and calculate mean NMI score
-    df_res = pd.DataFrame(results).fillna('None')
-    df_res = df_res.groupby(['top_k'])['nmi'].mean().reset_index().replace(['None'], [None])
+    df_res = pd.DataFrame(results).fillna('None')  # Because transform_type could be None
+    df_res = df_res.groupby(['top_k', 'with_separate_domains', 'transform_type'])['nmi'].mean()
+    df_res = df_res.replace(['None'], [None])  # Replace 'None' with None
     df_res.sort_values('nmi', ascending=False, inplace=True)
 
-    # new_params = {
-    #     'top_k': df_res['top_k'].iloc[0],
-    #     'score_mode': df_res['score_mode'].iloc[0],
-    #     'transform_type': df_res['transform_type'].iloc[0],
-    # }
-
     # Return the top_k value with the highest mean NMI score
-    return df_res['top_k'].iloc[0]
+    return df_res['top_k'].iloc[0], df_res['with_separate_domains'].iloc[0], df_res['transform_type'].iloc[0]
 
 
 def search(
@@ -84,7 +86,10 @@ def search(
         model_type: str,
         transform_type: str = None,
         search_type: Optional[Literal['fixed', 'linear']] = None,
-) -> int:
+) -> Tuple[int, bool, str]:
+    """
+    Performs a search for the optimal number of top features, with optional separate domains and transformation type.
+    """
     if search_type == 'fixed':
         return simple_grid_search(
             ranker=ranker,
@@ -97,4 +102,5 @@ def search(
     elif search_type == 'linear':
         assert False, 'Linear search is not supported'
     else:
-        return len(df_train.columns)
+        # No search is performed so return the default values
+        return len(df_train.columns), False, transform_type

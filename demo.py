@@ -4,7 +4,7 @@ import pickle
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import adjusted_mutual_info_score
+from sklearn.metrics import adjusted_mutual_info_score, normalized_mutual_info_score
 
 from t2f.data.dataset import read_ucr_datasets, encode_labels
 from t2f.data.train import select_labels
@@ -108,7 +108,7 @@ def pipeline(
 
     print('Feature selection')
     context = {'model_type': model_type, 'transform_type': transform_type}
-    top_features = feature_selection(
+    top_features, transform_type = feature_selection(
         df=df_features,
         labels=labels,
         ranking_type=ranking_type,
@@ -125,13 +125,14 @@ def pipeline(
     y_pred = model.fit_predict(df_features.values)
 
     print('AMI: {:0.4f}'.format(adjusted_mutual_info_score(y_true, y_pred)))
+    print('NMI: {:0.4f}'.format(normalized_mutual_info_score(y_true, y_pred)))
 
     return cluster_metrics(y_true, y_pred)
 
 
 RANKING = [
     'anova', 'fisher_score'  'laplace_score', 'trace_ratio100', 'trace_ratio',
-    'mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap',  'disr',
+    'mim', 'mifs', 'mrmr', 'cife', 'jmi', 'cmim', 'icap', 'disr',
     'rfs', 'mcfs', 'udfs', 'ndfs', 'gini', 'cfs'
 ]
 
@@ -145,7 +146,7 @@ if __name__ == '__main__':
         ranking_type=["anova", "mim"],
         ensemble_type="average",
         train_type='random',
-        train_size=0.5,  # 0.2, 0.3, 0.4, 0.5
+        train_size=0.2,  # 0.2, 0.3, 0.4, 0.5
         batch_size=500,
         p=4,
         checkpoint_dir='./checkpoint',
