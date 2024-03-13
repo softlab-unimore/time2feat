@@ -1,6 +1,6 @@
 # https://jundongl.github.io/scikit-feature/algorithms.html
 
-# ToDo FDB: https://jundongl.github.io/scikit-feature/algorithms.html
+# https://jundongl.github.io/scikit-feature/algorithms.html
 
 # def spec(X: pd.DataFrame, style: int) -> (pd.Series, pd.Series):
 #     """
@@ -27,7 +27,7 @@
 #     # Check for abnormal values
 #     # Remove the features with an absolute mean greater than 1000
 #     # If this is not done the SPEC computation will raise an error saying that "eigenvalues did not converge"
-#     # FIXME: other ideas?
+#     # Other ideas?
 #     X_avgs = X.mean(0).abs()
 #     clean_feat = X.columns[X_avgs < 1000]
 #     X_clean = X[clean_feat]
@@ -50,7 +50,7 @@
 #
 #     return out_scores, rank
 
-# ToDo FDB: Sklearn
+# Sklearn
 
 # def mutual_info_regr(df: pd.DataFrame, y: list) -> pd.Series:
 #     """
@@ -217,12 +217,12 @@
 #     X = X.drop(['y', 'class', label], axis=1)
 #
 #     # The Chi-square need all the features to be non-negative
-#     # FIXME: other ideas?
+#     # other ideas?
 #     scaler = MinMaxScaler()
 #     X_scaled = scaler.fit_transform(X)
 #
 #     scores, pvalues = chi2(X=X_scaled, y=y)
-#     # FIXME: use also the pvalues
+#     # use also the pvalues
 #
 #     scores = pd.Series(scores, index=X.columns)
 #     rank = scores.rank(ascending=False, method='min')
@@ -230,7 +230,7 @@
 #     return scores, rank
 
 
-# ToDo FDB: unsupervised algorithm
+# Unsupervised algorithm
 
 # def ndfs(df: pd.DataFrame, y: list, alpha: float = 1, beta: float = 1, gamma: float = 10e8) -> pd.Series:
 #     """ Unsupervised feature selection using nonnegative spectral analysis. """
