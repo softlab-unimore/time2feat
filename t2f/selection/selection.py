@@ -55,8 +55,10 @@ def supervised_selection(
         transform_type=transform_type,
         search_type=search_type
     )
-
     top_features = ranker.select(df=df_train, top_k=top_k, with_separate_domains=with_separate_domains)
+
+    print(f'Top K: {top_k}, Separate Domains: {with_separate_domains}, Transform Type: {transform_type}')
+    print(f'Top features: {top_features}')
 
     return top_features, transform_type
 

@@ -28,6 +28,8 @@ def feature_extraction_with_checkpoint(
         checkpoint_dir: str = None,
         ts_files: list = None,
 ) -> pd.DataFrame:
+    assert (checkpoint_dir is not None and ts_files is not None) or checkpoint_dir is None
+
     # Check if the checkpoint directory is provided
     if checkpoint_dir:
 
@@ -137,19 +139,22 @@ RANKING = [
 ]
 
 if __name__ == '__main__':
-    pipeline(
-        files=['data/BasicMotions/BasicMotions_TEST.txt', 'data/BasicMotions/BasicMotions_TRAIN.txt'],
-        intra_type='tsfresh',
-        inter_type='distance',
-        transform_type='minmax',
-        model_type='Hierarchical',
-        ranking_type=["anova", "mim"],
-        ensemble_type="average",
-        train_type='random',
-        train_size=0.2,  # 0.2, 0.3, 0.4, 0.5
-        batch_size=500,
-        p=4,
-        checkpoint_dir='./checkpoint',
-        random_seed=42
-    )
+    dataset = 'Cricket'
+    for i in range(100):
+        print(f"\nRun {i}")
+        pipeline(
+            files=[f'data/{dataset}/{dataset}_TEST.txt', f'data/{dataset}/{dataset}_TRAIN.txt'],
+            intra_type='tsfresh',
+            inter_type='distance',
+            transform_type='minmax',
+            model_type='Hierarchical',
+            ranking_type=["anova"],
+            ensemble_type="average",
+            train_type='random',
+            train_size=0.2,  # 0.2, 0.3, 0.4, 0.5
+            batch_size=500,
+            p=4,
+            checkpoint_dir='./checkpoint',
+            random_seed=42
+        )
     print('Hello World!')

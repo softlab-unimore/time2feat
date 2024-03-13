@@ -43,7 +43,7 @@ def simple_grid_search(
 
     # Define grid parameters
     grid_params = {
-        'top_k': [10, 25, 50, 100, 200, 300] * 2,
+        'top_k': [10, 25, 50, 100, 200, 300] * 4,
         'with_separate_domains': [True, False],
         'transform_type': ['minmax', 'standard', None],
     }
