@@ -3,7 +3,7 @@ from tsfresh import feature_extraction
 
 
 def get_transformer(transform_type: str):
-    if transform_type == 'std':
+    if transform_type == 'standard':
         transformer = StandardScaler()
     elif transform_type == 'minmax':
         transformer = MinMaxScaler()

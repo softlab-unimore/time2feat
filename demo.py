@@ -66,7 +66,7 @@ def pipeline(
         files: List[str],
         intra_type: Literal['tsfresh'],
         inter_type: Literal['distance'],
-        transform_type: Optional[Literal['std', 'minmax', 'robust']],
+        transform_type: Optional[Literal['standard', 'minmax', 'robust']],
         model_type: Literal['Hierarchical', 'KMeans', 'Spectral'],
         ranking_type: List[str] = None,  # ['anova']
         ranking_pfa: Optional[float] = 0.9,
