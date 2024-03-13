@@ -93,7 +93,7 @@ class Ranker(object):
                 # Duplicates have been found: check if they have all the same value
                 duprank = rank[rank.index.duplicated(keep=False)]
                 duprank = duprank.reset_index().rename({"index": "feature_name", 0: "values"}, axis=1)
-                diversedups = duprank.groupby("feat_name").nunique()
+                diversedups = duprank.groupby("feature_name").nunique()
                 feats_with_diff_values = diversedups[diversedups.values > 1].index
                 if len(feats_with_diff_values) > 0:
                     print("WARNING: found duplicates with different values for the same feature")
