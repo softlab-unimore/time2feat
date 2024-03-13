@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Union
 import os
 import pickle
 
@@ -20,7 +20,7 @@ def build_feat_path(checkpoint_dir, ts_files):
 
 
 def feature_extraction_with_checkpoint(
-        ts_list: (list, np.array),
+        ts_list: Union[list, np.array],
         intra_type: Literal['tsfresh'],
         inter_type: Literal['distance'],
         batch_size: int = -1,
@@ -155,6 +155,6 @@ if __name__ == '__main__':
             batch_size=500,
             p=4,
             checkpoint_dir='./checkpoint',
-            random_seed=42
+            random_seed=42 + i
         )
     print('Hello World!')
