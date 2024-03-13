@@ -15,7 +15,7 @@ def simple_grid_search(
         df_all: pd.DataFrame,
         model_type: str,
         transform_type: str = None,
-) -> Tuple[int, bool, str]:
+) -> Tuple[int, bool, str, float]:
     """Performs a simple grid search over a set of parameters to find the optimal number of top features.
 
     This function takes a ranking object which is used to rank and select features from the training data. It then
@@ -46,12 +46,14 @@ def simple_grid_search(
         'top_k': [10, 25, 50, 100, 200, 300] * 4,
         'with_separate_domains': [True, False],
         'transform_type': ['minmax', 'standard', None],
+        'pfa': [0.9, None]
     }
 
     results = []
     time.sleep(0.1)  # Small sleep for tqdm robustness
     for new_params in tqdm(ParameterGrid(grid_params)):
-        # Select top K features
+        # Select top K features with the current parameters
+        ranker.pfa_variance = new_params['pfa']  # Set PFA variance if applicable
         top_features = ranker.select(df=df_train, top_k=new_params['top_k'],
                                      with_separate_domains=new_params['with_separate_domains'])
 
@@ -68,14 +70,20 @@ def simple_grid_search(
         res_metrics.update(new_params)
         results.append(res_metrics)
 
+    # Configuration params to return
+    cols = ['top_k', 'with_separate_domains', 'transform_type', 'pfa']  # values will be returned in this order
+    # Metrics to use for comparison
+    metrics = ['ami', 'nmi', 'rand']  # the order of the metrics is important
+
     # Convert results to DataFrame and calculate mean NMI score
     df_res = pd.DataFrame(results).fillna('None')  # Because transform_type could be None
-    df_res = df_res.groupby(['top_k', 'with_separate_domains', 'transform_type'])['nmi'].mean().reset_index()
+    df_res = df_res.groupby(cols)[metrics].mean().reset_index()
     df_res = df_res.replace(['None'], [None])  # Replace 'None' with None
-    df_res = df_res.sort_values('nmi', ascending=False)
+    df_res = df_res.sort_values(metrics, ascending=False)
 
-    # Return the top_k value with the highest mean NMI score
-    return df_res['top_k'].iloc[0], df_res['with_separate_domains'].iloc[0], df_res['transform_type'].iloc[0]
+    # Return the best configuration value with the highest average ami score
+    top_k, with_separate_domains, transform_type, pfa = df_res[cols].iloc[0].to_list()
+    return top_k, with_separate_domains, transform_type, pfa
 
 
 def search(
@@ -86,7 +94,7 @@ def search(
         model_type: str,
         transform_type: str = None,
         search_type: Optional[Literal['fixed', 'linear']] = None,
-) -> Tuple[int, bool, str]:
+) -> Tuple[int, bool, str, float]:
     """
     Performs a search for the optimal number of top features, with optional separate domains and transformation type.
     """
@@ -103,4 +111,6 @@ def search(
         assert False, 'Linear search is not supported'
     else:
         # No search is performed so return the default values
-        return len(df_train.columns), False, transform_type
+        # 0.9 is the default value for pfa_variance
+        # False is the default value for with_separate_domains
+        return len(df_train.columns), False, transform_type, 0.9

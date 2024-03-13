@@ -46,7 +46,7 @@ def supervised_selection(
     ranker = Ranker(ranking_type=ranking_type, ensemble_type=ensemble_type, pfa_variance=pfa_variance)
     ranker.ranking(df=df_train, y=y_train)
 
-    top_k, with_separate_domains, transform_type = search(
+    top_k, with_separate_domains, transform_type, pfa_variance = search(
         ranker=ranker,
         df_train=df_train,
         y_train=y_train,
@@ -55,9 +55,11 @@ def supervised_selection(
         transform_type=transform_type,
         search_type=search_type
     )
+    ranker.pfa_variance = pfa_variance  # Set the PFA variance to the best value found
     top_features = ranker.select(df=df_train, top_k=top_k, with_separate_domains=with_separate_domains)
 
-    print(f'Top K: {top_k}, Separate Domains: {with_separate_domains}, Transform Type: {transform_type}')
+    print(
+        f'Top K: {top_k}, Separate Domains: {with_separate_domains}, Transform Type: {transform_type} pfa {pfa_variance}')
     print(f'Top features: {top_features}')
 
     return top_features, transform_type
