@@ -1,4 +1,6 @@
 from typing import List, Literal, Optional, Tuple
+
+import numpy as np
 import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
 
@@ -31,7 +33,8 @@ def supervised_selection(
         ensemble_type: Optional[str] = None,
         pfa_variance: Optional[float] = 0.9,
         search_type: Optional[Literal['fixed', 'linear']] = None,
-) -> Tuple[List[str], str]:
+        y_true: list = None,
+) -> Tuple[List[str], str, pd.DataFrame]:
     # Extract train and test records, with label associated with train data
     train_idx = list(labels.keys())
     test_idx = [i for i in range(len(df)) if i not in train_idx]
@@ -46,14 +49,16 @@ def supervised_selection(
     ranker = Ranker(ranking_type=ranking_type, ensemble_type=ensemble_type, pfa_variance=pfa_variance)
     ranker.ranking(df=df_train, y=y_train)
 
-    top_k, with_separate_domains, transform_type, pfa_variance = search(
+    top_k, with_separate_domains, transform_type, pfa_variance, df_debug = search(
         ranker=ranker,
         df_train=df_train,
         y_train=y_train,
         df_all=df_all,
         model_type=model_type,
         transform_type=transform_type,
-        search_type=search_type
+        search_type=search_type,
+        df_true=df,
+        y_true=y_true
     )
     ranker.pfa_variance = pfa_variance  # Set the PFA variance to the best value found
     top_features = ranker.select(df=df_train, top_k=top_k, with_separate_domains=with_separate_domains)
@@ -62,7 +67,7 @@ def supervised_selection(
         f'Top K: {top_k}, Separate Domains: {with_separate_domains}, Transform Type: {transform_type} pfa {pfa_variance}')
     print(f'Top features: {top_features}')
 
-    return top_features, transform_type
+    return top_features, transform_type, df_debug
 
 
 def unsupervised_selection(df: pd.DataFrame, variance: Optional[float] = 0.9) -> List[str]:
@@ -82,7 +87,8 @@ def feature_selection(
         ensemble_type: str = None,
         search_type: Optional[Literal['fixed', 'linear']] = 'fixed',
         context: dict = None,
-) -> Tuple[List[str], str]:
+        y_true: list = None,
+) -> Tuple[List[str], str, pd.DataFrame]:
     if 'transform_type' not in context:
         raise ValueError('The context must contain a "transform_type" key.')
     if labels and 'model_type' not in context:
@@ -97,7 +103,7 @@ def feature_selection(
     df = cleaning(df)
 
     if labels:
-        top_features, transform_type = supervised_selection(
+        top_features, transform_type, df_debug = supervised_selection(
             df=df,
             labels=labels,
             ranking_type=ranking_type,
@@ -106,7 +112,9 @@ def feature_selection(
             transform_type=transform_type,
             ensemble_type=ensemble_type,
             search_type=search_type,
+            y_true=y_true
         )
     else:
+        df_debug = pd.DataFrame()
         top_features = unsupervised_selection(df, variance=pfa_variance)
-    return top_features, transform_type
+    return top_features, transform_type, df_debug

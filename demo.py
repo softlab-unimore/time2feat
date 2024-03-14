@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union, Tuple
 import os
 import pickle
 
@@ -80,7 +80,7 @@ def pipeline(
         p: int = 1,
         checkpoint_dir: Optional[str] = None,
         random_seed: Optional[int] = None
-) -> dict:
+) -> Tuple[dict, pd.DataFrame]:
     # Simple consistency check
     if [x for x in files if not os.path.isfile(x)]:
         raise ValueError('At least on time-series path does not exist')
@@ -107,17 +107,17 @@ def pipeline(
         ts_list=ts_list, intra_type=intra_type, inter_type=inter_type, batch_size=batch_size, p=p
     )
     print('Number of extracted features: {}'.format(df_features.shape[1]))
-
-    print('Feature selection')
+    print(f'Feature selection: {ranking_type}')
     context = {'model_type': model_type, 'transform_type': transform_type}
-    top_features, transform_type = feature_selection(
+    top_features, transform_type, df_debug = feature_selection(
         df=df_features,
         labels=labels,
         ranking_type=ranking_type,
         ensemble_type=ensemble_type,
         pfa_variance=ranking_pfa,
         search_type=search_type,
-        context=context
+        context=context,
+        y_true=list(y_true)
     )
     df_features = df_features[top_features]
     print('Number of selected features: {}'.format(df_features.shape[1]))
@@ -129,7 +129,7 @@ def pipeline(
     print('AMI: {:0.4f}'.format(adjusted_mutual_info_score(y_true, y_pred)))
     print('NMI: {:0.4f}'.format(normalized_mutual_info_score(y_true, y_pred)))
 
-    return cluster_metrics(y_true, y_pred)
+    return cluster_metrics(y_true, y_pred), df_debug
 
 
 RANKING = [
@@ -139,7 +139,7 @@ RANKING = [
 ]
 
 if __name__ == '__main__':
-    dataset = 'Cricket'
+    dataset = 'BasicMotions'
     for i in range(100):
         print(f"\nRun {i}")
         pipeline(

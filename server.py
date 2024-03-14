@@ -17,6 +17,11 @@ DATASETS_UCR = [
     'EthanolConcentration', 'HandMovementDirection', 'Handwriting', 'Libras', 'RacketSports', 'SelfRegulationSCP1',
     'SelfRegulationSCP2', 'StandWalkJump', 'UWaveGestureLibrary', 'LSST', 'PenDigits', 'PhonemeSpectra'
 ]
+
+SELECTED_DATESET_UCR = ['Libras', 'BasicMotions', 'UWaveGestureLibrary', 'Handwriting', 'SelfRegulationsSCP1',
+                        'Cricket']
+DELETE_DATASET_UCR = ['AtrialFibrillation', 'StandWalkJump', 'HandMovementDirection', 'SelfRegulationSCP2',
+                      'PhonemeSpectra', 'LSST']
 # DATASETS_UCR = ['BasicMotions']
 
 RANKING_MAP = {
@@ -91,7 +96,7 @@ def test_feature_selection_pipeline(
         print(f'\n{ranking}')
         t1 = datetime.now()
         try:
-            res = pipeline(
+            res, _ = pipeline(
                 files=files,
                 intra_type='tsfresh',
                 inter_type='distance',
@@ -121,7 +126,7 @@ def test_feature_selection_pipeline(
         print(f'\n{ranking}')
         t1 = datetime.now()
         try:
-            res = pipeline(
+            res, _ = pipeline(
                 files=files,
                 intra_type='tsfresh',
                 inter_type='distance',
@@ -157,7 +162,7 @@ def test_feature_selection_pipeline(
             print(f'\n{ensemble} {ranking}')
             t1 = datetime.now()
             try:
-                res = pipeline(
+                res, _ = pipeline(
                     files=files,
                     intra_type='tsfresh',
                     inter_type='distance',
@@ -185,10 +190,46 @@ def test_feature_selection_pipeline(
     return results
 
 
+def debug_ranking_pipeline(
+        files: list,
+        train_size: float,
+        output_dir: str,
+        checkpoint_dir: str = './checkpoint',
+        seed: int = None,
+):
+    # Create a results file name based on the base name of the directory of the first file and the train size
+    results_name = os.path.basename(os.path.dirname(files[0])) + f'_s{int(train_size * 100)}.csv'
+    results = {}
+
+    for ranker in ['anova', 'fisher_score']:
+        print(f'\n{ranker}\n')
+        res, df_debug = pipeline(
+            files=files,
+            intra_type='tsfresh',
+            inter_type='distance',
+            transform_type='minmax',
+            model_type='Hierarchical',
+            ranking_type=[ranker],
+            ensemble_type=None,  # 'condorcet_fuse',
+            train_type='random',
+            train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+            batch_size=500,
+            p=4,
+            checkpoint_dir=checkpoint_dir,
+            random_seed=seed
+        )
+        results[ranker] = res
+        debug_path = os.path.join(output_dir, f"debug_{ranker}_{results_name}")
+        df_debug.to_csv(debug_path, index=False)
+
+    results_path = os.path.join(output_dir, f"test_{results_name}")
+    pd.DataFrame(results).T.to_csv(results_path, index=True)
+
+
 def main():
     data_dir, output_dir, checkpoint_dir, seed = parse_params()
 
-    for dataset in DATASETS_UCR:
+    for dataset in SELECTED_DATESET_UCR:
         print(f'\n{dataset}')
 
         if not os.path.isdir(os.path.join(data_dir, dataset)):
@@ -201,7 +242,8 @@ def main():
         ]
 
         for train_size in [0.2, 0.3, 0.5]:
-            _ = test_feature_selection_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
+            # _ = test_feature_selection_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
+            debug_ranking_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
 
 
 if __name__ == '__main__':
