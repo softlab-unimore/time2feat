@@ -1,11 +1,11 @@
-from typing import List, Literal, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 from sklearn.feature_selection import VarianceThreshold
 
 from .PFA import pfa_scoring
-from .search import search
+from .search.search import search
 from ..ranking.wrapper import Ranker
 
 
@@ -32,7 +32,7 @@ def supervised_selection(
         transform_type: Optional[str] = None,
         ensemble_type: Optional[str] = None,
         pfa_variance: Optional[float] = 0.9,
-        search_type: Optional[Literal['fixed', 'linear']] = None,
+        search_type: Optional[str] = None,  # 'fixed', 'linear', 'cv5', None
         y_true: list = None,
 ) -> Tuple[List[str], str, pd.DataFrame]:
     # Extract train and test records, with label associated with train data
@@ -85,7 +85,7 @@ def feature_selection(
         ranking_type: List[str] = None,  # ['anova']
         pfa_variance: Optional[float] = 0.9,
         ensemble_type: str = None,
-        search_type: Optional[Literal['fixed', 'linear']] = 'fixed',
+        search_type: str = 'fixed',
         context: dict = None,
         y_true: list = None,
 ) -> Tuple[List[str], str, pd.DataFrame]:

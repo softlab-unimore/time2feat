@@ -64,6 +64,23 @@ def feature_extraction_with_checkpoint(
     return df_features
 
 
+def extract_original_train_labels(files: List[str], y_true: np.ndarray) -> dict:
+    # Extract the original train labels from the dataset
+    start_idx = 0
+    for file in files:
+        ts_list, y = read_ucr_datasets(paths=[file])
+
+        if 'TRAIN' in os.path.basename(file):
+            labels = {}
+            for idx, yi in enumerate(y):
+                labels[start_idx + idx] = y_true[start_idx + idx]
+            return labels
+
+        start_idx += len(y)
+
+    assert False
+
+
 def pipeline(
         files: List[str],
         intra_type: Literal['tsfresh'],
@@ -73,13 +90,14 @@ def pipeline(
         ranking_type: List[str] = None,  # ['anova']
         ranking_pfa: Optional[float] = 0.9,
         ensemble_type: str = None,
-        search_type: Optional[Literal['fixed', 'linear']] = 'fixed',
+        search_type: Optional[str] = 'fixed',  # 'fixed', 'linear', 'cv5', None
         train_type: Literal['random'] = 'random',
         train_size: float = 0,
         batch_size: int = 500,
         p: int = 1,
         checkpoint_dir: Optional[str] = None,
-        random_seed: Optional[int] = None
+        random_seed: Optional[int] = None,
+        train_real: bool = False,
 ) -> Tuple[dict, pd.DataFrame]:
     # Simple consistency check
     if [x for x in files if not os.path.isfile(x)]:
@@ -93,19 +111,25 @@ def pipeline(
     n_clusters = len(set(y_true))  # Get number of clusters to find
     print('Dataset shape: {}, Num of clusters: {}'.format(ts_list.shape, n_clusters))
 
-    labels = {}
-    if train_size > 0:
-        if random_seed:
-            np.random.seed(random_seed)
-        labels = select_labels(x=ts_list, y=y_true, method=train_type, size=train_size)
-        print('Number of Labels: {}'.format(len(labels)))
-
     print('Feature extraction')
     # df_features = feature_extraction(ts_list, intra_type, inter_type, batch_size, p)
     df_features = feature_extraction_with_checkpoint(
         checkpoint_dir=checkpoint_dir, ts_files=files,
         ts_list=ts_list, intra_type=intra_type, inter_type=inter_type, batch_size=batch_size, p=p
     )
+
+    labels = {}
+    if train_size > 0 and not train_real:
+        if random_seed:
+            np.random.seed(random_seed)
+        labels = select_labels(x=ts_list, y=y_true, method=train_type, size=train_size)
+        print('Number of random labels: {}'.format(len(labels)))
+
+    elif train_real:
+        labels = extract_original_train_labels(files, y_true)
+
+        print('Number of train labels: {}'.format(len(labels)))
+
     print('Number of extracted features: {}'.format(df_features.shape[1]))
     print(f'Feature selection: {ranking_type}')
     context = {'model_type': model_type, 'transform_type': transform_type}
@@ -150,11 +174,13 @@ if __name__ == '__main__':
             model_type='Hierarchical',
             ranking_type=["anova"],
             ensemble_type="average",
+            search_type='cv5',  # linear, fixed, cv5, None
             train_type='random',
-            train_size=0.2,  # 0.2, 0.3, 0.4, 0.5
+            train_size=0.5,  # 0.2, 0.3, 0.4, 0.5
             batch_size=500,
             p=4,
             checkpoint_dir='./checkpoint',
-            random_seed=42 + i
+            random_seed=42 + i,
+            train_real=False,
         )
     print('Hello World!')

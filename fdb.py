@@ -2,8 +2,9 @@ import os
 import pandas as pd
 
 from t2f.plot.cdd import draw_cd_diagram
+from server import ENSEMBLE, ENSEMBLE_RANKING, RANKING_MAP
 
-NUM_ABLATION = 59
+NUM_ABLATION = 52
 
 
 def check_null_results():
@@ -91,7 +92,7 @@ def read_results(results_dir, train_size, metric):
 
 
 def mean_results():
-    results_dir = './results'
+    results_dir = './results/new'
     output_mean_dir = os.path.join(results_dir, 'mean')
     output_std_dir = os.path.join(results_dir, 'std')
 
@@ -129,11 +130,11 @@ def mean_results():
 
 
 def plot_critical_difference_diagrams():
-    results_dir = './results'
+    results_dir = './results/compact/'
     output_dir = './figures'
     metric = 'nmi'
 
-    for my_dir in ['mean']:  # os.listdir(results_dir)
+    for my_dir in ['mean_new']:  # os.listdir(results_dir)
         my_dir = os.path.join(results_dir, my_dir)
         os.makedirs(os.path.join(output_dir, os.path.basename(my_dir)), exist_ok=True)
         for train_size in ['s20', 's30', 's50']:
@@ -155,26 +156,12 @@ def plot_critical_difference_diagrams():
 
 
 def compare_w_t2f():
+    # Create a list of all ranking methods from the RANKING_MAP dictionary
+    ranking_methods = [val for arr in RANKING_MAP.values() for val in arr if val != 'anova']
+    ensemble_methods = [f'{ensemble}{k}' for ensemble in ENSEMBLE for k, ranking in ENSEMBLE_RANKING.items()]
+
+    methods = ["anova"] + ensemble_methods + ranking_methods
     size = 20
-    methods = [
-        "anova", "average", 'reciprocal_rank_fusionTop5', 'reciprocal_rank_fusionSimSK'
-    ]
-    # "averageALL", "averageSimSK", "averageTop3", "averageTop5",
-    #     "cfs", "cfs w/o S&PFA", "cife", "cife w/o S&PFA", "cmim", "cmim w/o S&PFA",
-    #     "combmnz", "combmnzALL", "combmnzSimSK", "combmnzTop3", "combmnzTop5",
-    #     "combsum", "combsumALL", "combsumSimSK", "combsumTop3", "combsumTop5",
-    #     "condorcet_fuse", "condorcet_fuseALL", "condorcet_fuseSimSK", "condorcet_fuseTop3", "condorcet_fuseTop5",
-    #     "disr", "fisher_score", "gini", "icap", "icap w/o S&PFA",
-    #     "inverse_square_rank", "inverse_square_rankALL", "inverse_square_rankSimSK", "inverse_square_rankTop3",
-    #     "inverse_square_rankTop5",
-    #     "jmi", "laplace_score", "mcfs", "mifs", "mim",
-    #     "mrmr", "mrmr w/o S&PFA", "ndfs",
-    #     "rank_biased_centroid", "rank_biased_centroidALL", "rank_biased_centroidSimSK", "rank_biased_centroidTop3",
-    #     "rank_biased_centroidTop5",
-    #     "reciprocal_rank_fusion", "reciprocal_rank_fusionALL", "reciprocal_rank_fusionSimSK",
-    #     "reciprocal_rank_fusionTop3", "reciprocal_rank_fusionTop5",
-    #     "rfs", "trace_ratio", "trace_ratio100", "udfs"
-    # ]
     if size == 20:
         idx = 0
     elif size == 50:
@@ -182,15 +169,17 @@ def compare_w_t2f():
     else:
         raise ValueError('Invalid size')
 
-    t2f_mean = pd.read_csv('./results/compact/t2f_mean.csv', index_col=0).iloc[:, [idx]]
-    t2f_std = pd.read_csv('./results/compact/t2f_std.csv', index_col=0).iloc[:, [idx]]
-    # mead_dir = './results/compact/mean'
-    mead_dir = './results/compact/mean'
-    std_dir = './results/compact/std'
+    t2f_mean = pd.read_csv('results/t2f_mean.csv', index_col=0).iloc[:, ]
+    t2f_std = pd.read_csv('results/t2f_std.csv', index_col=0).iloc[:, ]
+    # mead_dir = './results/compact/mean_old'
+    mead_dir = 'results/compact/mean_new'
+    std_dir = 'results/compact/std_new'
 
     baselines_mean = []
     baselines_std = []
     for dataset in t2f_mean.index:
+        if not os.path.isfile(f'{mead_dir}/{dataset}_s{size}.csv'):
+            continue
         df_mean = pd.read_csv(f'{mead_dir}/{dataset}_s{size}.csv', index_col=0).loc[methods, 'ami']
         df_std = pd.read_csv(f'{std_dir}/{dataset}_s{size}.csv', index_col=0).loc[methods, 'ami']
         df_mean.name = dataset
@@ -209,6 +198,7 @@ def compare_w_t2f():
 
     baselines_mean = pd.concat([t2f_mean, baselines_mean], axis=1).round(3)
     baselines_std = pd.concat([t2f_std, baselines_std], axis=1).round(3)
+    baselines_mean.to_excel(f'means_{size}.xlsx')
     print('Here!')
 
 
@@ -217,5 +207,5 @@ if __name__ == '__main__':
     # check_results_difference()
     # mean_results()
     # plot_critical_difference_diagrams()
-    # compare_w_t2f()
+    compare_w_t2f()
     print('Hello World!')

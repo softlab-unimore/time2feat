@@ -1,52 +1,18 @@
-from typing import Optional, Literal, Tuple
+from typing import Tuple
 import time
 
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from sklearn.model_selection import ParameterGrid
 
-from ..ranking.wrapper import Ranker
-from ..model.clustering import ClusterWrapper, cluster_metrics
+from t2f.ranking.wrapper import Ranker
+from t2f.model.clustering import ClusterWrapper, cluster_metrics
 
-
-def generate_sequence(N):
-    sequence = []
-
-    # From 1 to 10 with step 1
-    sequence.extend(range(1, 11))
-
-    # From 10 to 50 with step 2
-    sequence.extend(range(12, 51, 2))
-
-    # From 50 to 200 with step 10
-    sequence.extend(range(60, 201, 10))
-
-    # From 200 to N with step of 1% of N
-    current = 210 if 200 + 0.01 * N > 200 else 200 + 0.01 * N
-    step = max(1, 0.01 * N)  # Ensure at least 1 step if N is less than 100
-    while current <= N:
-        sequence.append(int(current))
-        current += step
-
-    return sequence
-
-
-def debug_step(params, model, df_all, y_train, df_true, y_test) -> dict:
-    step = {**params}
-    # Compute the clustering metrics for the train and test set
-    y_pred = model.fit_predict(df_all)
-    res = cluster_metrics(y_train, y_pred[:len(y_train)])
-    res = {f'train_{k}': v for k, v in res.items()}
-    step.update(res)
-    y_pred = model.fit_predict(df_true)
-    res = cluster_metrics(y_test, y_pred)
-    res = {f'test_{k}': v for k, v in res.items()}
-    step.update(res)
-    return step
+from .utils import debug_step
 
 
 def simple_grid_search(
+        top_k_values: list,
         ranker: Ranker,
         df_train: pd.DataFrame,
         y_train: list,
@@ -65,6 +31,7 @@ def simple_grid_search(
 
 
     Args:
+        top_k_values: A list of integers representing the number of top features to consider.
         ranker: An instance of a Ranker class with ranking and select methods.
         df_train: A DataFrame containing the training data features.
         y_train: A list containing the training data labels.
@@ -83,7 +50,7 @@ def simple_grid_search(
 
     # Define grid parameters
     grid_params = {
-        'top_k': generate_sequence(df_train.shape[1]),  # [10, 25, 50, 100, 200, 300] * 4,
+        'top_k': top_k_values,
         'with_separate_domains': [True, False],
         'transform_type': ['minmax', 'standard', None],
         'pfa': [0.9, None]
@@ -127,37 +94,3 @@ def simple_grid_search(
     # Return the best configuration value with the highest average ami score
     top_k, with_separate_domains, transform_type, pfa = df_res[cols].iloc[0].to_list()
     return top_k, with_separate_domains, transform_type, pfa, pd.DataFrame(df_debug)
-
-
-def search(
-        ranker: Ranker,
-        df_train: pd.DataFrame,
-        y_train: list,
-        df_all: pd.DataFrame,
-        model_type: str,
-        transform_type: str = None,
-        search_type: Optional[Literal['fixed', 'linear']] = None,
-        df_true: pd.DataFrame = None,
-        y_true: list = None,
-) -> Tuple[int, bool, str, float, pd.DataFrame]:
-    """
-    Performs a search for the optimal number of top features, with optional separate domains and transformation type.
-    """
-    if search_type == 'fixed':
-        return simple_grid_search(
-            ranker=ranker,
-            df_train=df_train,
-            y_train=y_train,
-            df_all=df_all,
-            model_type=model_type,
-            transform_type=transform_type,
-            df_true=df_true,
-            y_true=y_true
-        )
-    elif search_type == 'linear':
-        assert False, 'Linear search is not supported'
-    else:
-        # No search is performed so return the default values
-        # 0.9 is the default value for pfa_variance
-        # False is the default value for with_separate_domains
-        return len(df_train.columns), False, transform_type, 0.9, pd.DataFrame()

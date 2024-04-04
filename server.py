@@ -81,6 +81,7 @@ def test_feature_selection_pipeline(
         output_dir: str,
         checkpoint_dir: str = './checkpoint',
         seed: int = None,
+        train_real: bool = False,
 ):
     # Create a results file name based on the base name of the directory of the first file and the train size
     results_name = os.path.basename(os.path.dirname(files[0])) + f'_s{int(train_size * 100)}.csv'
@@ -104,12 +105,14 @@ def test_feature_selection_pipeline(
                 model_type='Hierarchical',
                 ranking_type=[ranking],
                 ensemble_type=None,  # 'condorcet_fuse',
+                search_type='linear',
                 train_type='random',
                 train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
                 batch_size=500,
                 p=4,
                 checkpoint_dir=checkpoint_dir,
-                random_seed=seed
+                random_seed=seed,
+                train_real=train_real
             )
         except:
             traceback.print_exc()
@@ -141,7 +144,8 @@ def test_feature_selection_pipeline(
                 batch_size=500,
                 p=4,
                 checkpoint_dir=checkpoint_dir,
-                random_seed=seed
+                random_seed=seed,
+                train_real=train_real
             )
         except:
             traceback.print_exc()
@@ -170,11 +174,13 @@ def test_feature_selection_pipeline(
                     model_type='Hierarchical',
                     ranking_type=ranking,
                     ensemble_type=ensemble,  # 'condorcet_fuse',
+                    search_type='linear',
                     train_type='random',
                     train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
                     batch_size=500,
                     p=4,
-                    checkpoint_dir=checkpoint_dir
+                    checkpoint_dir=checkpoint_dir,
+                    train_real=train_real
                 )
             except:
                 traceback.print_exc()
@@ -196,6 +202,7 @@ def debug_ranking_pipeline(
         output_dir: str,
         checkpoint_dir: str = './checkpoint',
         seed: int = None,
+        train_real: bool = False,
 ):
     # Create a results file name based on the base name of the directory of the first file and the train size
     results_name = os.path.basename(os.path.dirname(files[0])) + f'_s{int(train_size * 100)}.csv'
@@ -211,12 +218,14 @@ def debug_ranking_pipeline(
             model_type='Hierarchical',
             ranking_type=[ranker],
             ensemble_type=None,  # 'condorcet_fuse',
+            search_type='linear',
             train_type='random',
             train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
             batch_size=500,
             p=4,
             checkpoint_dir=checkpoint_dir,
-            random_seed=seed
+            random_seed=seed,
+            train_real=train_real
         )
         results[ranker] = res
         debug_path = os.path.join(output_dir, f"debug_{ranker}_{results_name}")
@@ -241,9 +250,9 @@ def main():
             os.path.join(data_dir, dataset, f'{dataset}_TRAIN.ts'),
         ]
 
-        for train_size in [0.2, 0.3, 0.5]:
-            # _ = test_feature_selection_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
-            debug_ranking_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
+        for train_size in [0.5]:
+            # _ = test_feature_selection_pipeline(files, train_size, output_dir, checkpoint_dir, seed, train_real=True)
+            debug_ranking_pipeline(files, train_size, output_dir, checkpoint_dir, seed, train_real=True)
 
 
 if __name__ == '__main__':
