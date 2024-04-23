@@ -24,15 +24,36 @@ def generate_sequence(N: int) -> list:
     return sequence
 
 
-def debug_step(params, model, df_all, y_train, df_true, y_test) -> dict:
+def debug_step(params, model, df_all, y_train, df_true, y_true) -> dict:
     step = {**params}
     # Compute the clustering metrics for the train and test set
     y_pred = model.fit_predict(df_all)
     res = cluster_metrics(y_train, y_pred[:len(y_train)])
-    res = {f'train_{k}': v for k, v in res.items()}
+    res = {f'cv_train_{k}': v for k, v in res.items()}
     step.update(res)
+
     y_pred = model.fit_predict(df_true)
-    res = cluster_metrics(y_test, y_pred)
+    res = cluster_metrics(y_true, y_pred)
+    res = {f'test_{k}': v for k, v in res.items()}
+    step.update(res)
+    return step
+
+
+def debug_step_test(params, model, df_all, y_train, df_true, y_true, y_test) -> dict:
+    step = {**params}
+    # Compute the clustering metrics for the train and test set
+    y_pred = model.fit_predict(df_all)
+
+    res = cluster_metrics(y_train, y_pred[:len(y_train)])
+    res = {f'cv_train_{k}': v for k, v in res.items()}
+    step.update(res)
+
+    res = cluster_metrics(y_test, y_pred[len(y_train):len(y_train) + len(y_test)])
+    res = {f'cv_test_{k}': v for k, v in res.items()}
+    step.update(res)
+
+    y_pred = model.fit_predict(df_true)
+    res = cluster_metrics(y_true, y_pred)
     res = {f'test_{k}': v for k, v in res.items()}
     step.update(res)
     return step

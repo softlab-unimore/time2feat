@@ -18,6 +18,7 @@ def cv_search_on_train_metrics(
         transform_type: str = None,
         df_true: pd.DataFrame = None,
         y_true: list = None,
+        with_test: bool = False,
 ):
     kf = KFold(n_splits=k_split, shuffle=True)
     indexes = np.arange(len(df_train))
@@ -28,10 +29,13 @@ def cv_search_on_train_metrics(
     i = 0
     for train_indexes, test_indexes in kf.split(indexes):
         print('Fold: ', i)
+
         y_train_fold = [y_train[i] for i in train_indexes]
         df_train_fold = df_train.iloc[train_indexes, :].reset_index(drop=True)
 
+        y_test_fold = [y_train[i] for i in test_indexes]
         df_test_fold = df_train.iloc[test_indexes, :].reset_index(drop=True)
+
         df_all_fold = pd.concat([df_train_fold, df_test_fold, df_test_real], axis=0, ignore_index=True)
 
         ranker_fold = Ranker(
@@ -40,6 +44,13 @@ def cv_search_on_train_metrics(
             pfa_variance=ranker.pfa_variance
         )
         ranker_fold.ranking(df=df_train_fold, y=y_train_fold)
+
+        if with_test:
+            df_test = df_test_fold
+            y_test = y_test_fold
+        else:
+            df_test = None
+            y_test = None
 
         top_k_fold, with_separate_domains_fold, transform_type_fold, pfa_fold, df_debug_fold = simple_grid_search(
             top_k_values=top_k_values,
@@ -50,7 +61,9 @@ def cv_search_on_train_metrics(
             model_type=model_type,
             transform_type=transform_type,
             df_true=df_true,
-            y_true=y_true
+            y_true=y_true,
+            df_test=df_test,
+            y_test=y_test
         )
 
         df_debug_fold['fold'] = i
@@ -62,7 +75,13 @@ def cv_search_on_train_metrics(
     # Configuration params to return
     cols = ['top_k', 'with_separate_domains', 'transform_type', 'pfa']  # values will be returned in this order
     # Metrics to use for comparison
-    metrics = ['train_ami', 'train_nmi', 'train_rand']  # the order of the metrics is important
+
+    if with_test:
+        pref = 'test'
+    else:
+        pref = 'train'
+
+    metrics = [f'cv_{pref}_ami', f'cv_{pref}_nmi', f'cv_{pref}_rand']  # the order of the metrics is important
 
     # Convert results to DataFrame and calculate mean NMI score
     df_res = pd.DataFrame(df_debug_all).fillna('None')  # Because transform_type could be None

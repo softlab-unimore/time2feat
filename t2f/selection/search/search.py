@@ -63,6 +63,36 @@ def search(
             y_true=y_true
         )
 
+    elif search_type.startswith('testcv'):
+        k_split = int(search_type[6:])
+        return cv_search_on_train_metrics(
+            k_split=k_split,
+            top_k_values=generate_sequence(df_train.shape[1]),
+            ranker=ranker,
+            df_train=df_train,
+            y_train=y_train,
+            df_all=df_all,
+            model_type=model_type,
+            transform_type=transform_type,
+            df_true=df_true,
+            y_true=y_true,
+            with_test=True,
+        )
+
+    elif search_type == 'time2feat':
+        return simple_grid_search(
+            top_k_values=[10, 25, 50, 100, 200, 300] * 2,
+            ranker=ranker,
+            df_train=df_train,
+            y_train=y_train,
+            df_all=df_all,
+            model_type=model_type,
+            transform_type=transform_type,
+            df_true=df_true,
+            y_true=y_true,
+            is_time2feat=True
+        )
+
     elif search_type is None:
         # No search is performed so return the default values
         # 0.9 is the default value for pfa_variance

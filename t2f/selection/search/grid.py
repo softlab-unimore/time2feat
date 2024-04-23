@@ -8,7 +8,7 @@ from sklearn.model_selection import ParameterGrid
 from t2f.ranking.wrapper import Ranker
 from t2f.model.clustering import ClusterWrapper, cluster_metrics
 
-from .utils import debug_step
+from .utils import debug_step, debug_step_test
 
 
 def simple_grid_search(
@@ -21,6 +21,9 @@ def simple_grid_search(
         transform_type: str = None,
         df_true: pd.DataFrame = None,
         y_true: list = None,
+        is_time2feat: bool = False,
+        df_test: pd.DataFrame = None,
+        y_test: list = None,
 ) -> Tuple[int, bool, str, float, pd.DataFrame]:
     """Performs a simple grid search over a set of parameters to find the optimal number of top features.
 
@@ -48,13 +51,22 @@ def simple_grid_search(
     # # Rank features using the ranking object
     # ranker.ranking(df=df_train, y=y_train)
 
-    # Define grid parameters
-    grid_params = {
-        'top_k': top_k_values,
-        'with_separate_domains': [True, False],
-        'transform_type': ['minmax', 'standard', None],
-        'pfa': [0.9, None]
-    }
+    if not is_time2feat:
+        # Define grid parameters
+        grid_params = {
+            'top_k': top_k_values,
+            'with_separate_domains': [True, False],
+            'transform_type': ['minmax', 'standard', None],
+            'pfa': [0.9, None]
+        }
+    else:
+        # Define grid parameters
+        grid_params = {
+            'top_k': top_k_values,
+            'with_separate_domains': [True, False],
+            'transform_type': ['minmax', 'standard'],
+            'pfa': [0.9]
+        }
 
     results = []
     df_debug = []
@@ -74,11 +86,22 @@ def simple_grid_search(
         y_pred = model.fit_predict(df_all[top_features])
 
         # Compute results and metrics
-        res_metrics = cluster_metrics(y_train, y_pred[:len(y_train)])
-        res_metrics.update(new_params)
-        results.append(res_metrics)
+        if df_test is None or y_test is None:
+            res_metrics = cluster_metrics(y_train, y_pred[:len(y_train)])
+            res_metrics.update(new_params)
+            results.append(res_metrics)
 
-        df_debug.append(debug_step(new_params, model, df_train[top_features], y_train, df_true[top_features], y_true))
+            df_debug.append(
+                debug_step(new_params, model, df_all[top_features], y_train, df_true[top_features], y_true)
+            )
+        else:
+            res_metrics = cluster_metrics(y_test, y_pred[len(y_train):len(y_train) + len(y_test)])
+            res_metrics.update(new_params)
+            results.append(res_metrics)
+
+            df_debug.append(
+                debug_step_test(new_params, model, df_all[top_features], y_train, df_true[top_features], y_true, y_test)
+            )
 
     # Configuration params to return
     cols = ['top_k', 'with_separate_domains', 'transform_type', 'pfa']  # values will be returned in this order

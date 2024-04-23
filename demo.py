@@ -102,8 +102,8 @@ def pipeline(
     # Simple consistency check
     if [x for x in files if not os.path.isfile(x)]:
         raise ValueError('At least on time-series path does not exist')
-    if train_size < 0 or train_size > 1:
-        raise ValueError('Train size must be between 0 and 1')
+    # if train_size < 0 or train_size > 1:
+    #     raise ValueError('Train size must be between 0 and 1')
 
     print('Read ucr datasets: ', files)
     ts_list, y_true = read_ucr_datasets(paths=files)
@@ -174,9 +174,9 @@ if __name__ == '__main__':
             model_type='Hierarchical',
             ranking_type=["anova"],
             ensemble_type="average",
-            search_type='cv5',  # linear, fixed, cv5, None
+            search_type='cv2',  # linear, fixed, cv5, None, testcv5
             train_type='random',
-            train_size=0.5,  # 0.2, 0.3, 0.4, 0.5
+            train_size=5,  # 0.2, 0.3, 0.4, 0.5
             batch_size=500,
             p=4,
             checkpoint_dir='./checkpoint',

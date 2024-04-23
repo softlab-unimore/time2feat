@@ -40,8 +40,16 @@ def select_labels(
         {0: 'a', 2: 'c', 3: 'd'}
     """
     if method == 'random':
+
+        stratify = None
+        if size > 1:
+            # If size is greater than 1, it is assumed to be the number of samples to select for each class
+            train_size = len(np.unique(y)) * int(size)
+            size = train_size / len(x)
+            stratify = y
+
         # Extract a subset of labelled data with random sampling
-        idx_train, _, y_train, _ = train_test_split(np.arange(len(x)), y, train_size=size)
+        idx_train, _, y_train, _ = train_test_split(np.arange(len(x)), y, train_size=size, stratify=stratify)
         labels = {i: j for i, j in zip(idx_train, y_train)}
         return labels
     else:
