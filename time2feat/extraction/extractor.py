@@ -1,8 +1,13 @@
 import os
 import itertools
+from concurrent.futures import as_completed
+from concurrent.futures.process import ProcessPoolExecutor
+
 import numpy as np
 import pandas as pd
 import multiprocessing as mp
+
+from tqdm import tqdm
 
 from .extractor_single import extract_univariate_features
 from .extractor_pair import extract_pair_features
@@ -126,16 +131,16 @@ def feature_extraction_simple(ts_list: (list, np.array), batch_size: int = -1, p
     return df_features
 
 
-def get_balanced_job(number_pool, number_job):
+def get_balanced_job(num_workers, num_jobs):
     """ Define number of records to assign to each processor """
     list_num_job = []
-    if number_job <= number_pool:
-        for i in range(number_job):
+    if num_jobs <= num_workers:
+        for i in range(num_jobs):
             list_num_job.append(1)
     else:
-        for i in range(number_pool):
-            list_num_job.append(int(number_job / number_pool))
-        for i in range(number_job % number_pool):
+        for i in range(num_workers):
+            list_num_job.append(int(num_jobs / num_workers))
+        for i in range(num_jobs % num_workers):
             list_num_job[i] = list_num_job[i] + 1
 
     return list_num_job
@@ -144,12 +149,12 @@ def get_balanced_job(number_pool, number_job):
 def feature_extraction(ts_list: (list, np.array), batch_size: int = -1, p: int = 1):
     """ Multiprocessing implementation of the feature extraction step """
     # Define the number of processors to use0
-    max_pool = mp.cpu_count() if p == -1 else p
+    max_workers = mp.cpu_count() if p == -1 else p
     num_batch = (len(ts_list) // batch_size) + 1
-    max_pool = num_batch if num_batch < max_pool else max_pool
+    max_workers = num_batch if num_batch < max_workers else max_workers
 
     # ToDo FDB: improve balance records between jobs
-    balance_job = get_balanced_job(number_pool=max_pool, number_job=len(ts_list))
+    balance_job = get_balanced_job(num_workers=max_workers, num_jobs=len(ts_list))
     # print('Feature extraction with {} processor and {} batch size'.format(max_pool, batch_size))
 
     index = 0
@@ -159,11 +164,20 @@ def feature_extraction(ts_list: (list, np.array), batch_size: int = -1, p: int =
         index += size
 
     # Multi processing script execution
-    pool = mp.Pool(max_pool)
-    extraction_feats = pool.starmap(feature_extraction_simple, list_arguments)
-    pool.close()
-    pool.join()
+    """pool = mp.Pool(max_pool)
+        extracted_feats = pool.starmap(feature_extraction_simple, list_arguments)
+        pool.close()
+        pool.join()
+        """
+    extracted_feats = list()
+    futures_list = list()
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        for list_argument in list_arguments:
+            futures_list.append(executor.submit(feature_extraction_simple, *list_argument))
+
+        for future_ in tqdm(as_completed(futures_list), total=len(futures_list)):
+            extracted_feats.append(future_.result())
 
     # Concatenate all results
-    df_features = pd.concat(extraction_feats, axis=0, ignore_index=True)
+    df_features = pd.concat(extracted_feats, axis=0, ignore_index=True)
     return df_features

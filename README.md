@@ -47,9 +47,9 @@ Get started with **time2feat**
 
 ```python
 import numpy as np
-from t2f.extraction.extractor import feature_extraction
-from t2f.utils.importance_old import feature_selection
-from t2f.model.clustering import ClusterWrapper
+from time2feat.extraction.extractor import feature_extraction
+from time2feat.utils.importance_old import feature_selection
+from time2feat.model.clustering import ClusterWrapper
 
 # 10 multivariate time series with 100 timestamps and 3 signals each
 arr = np.random.randn(10, 100, 3)

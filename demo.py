@@ -5,10 +5,10 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import adjusted_mutual_info_score
 
-from t2f.data.dataset import read_ucr_datasets
-from t2f.extraction.extractor import feature_extraction
-from t2f.selection.selection import feature_selection
-from t2f.model.clustering import ClusterWrapper
+from time2feat.data.dataset import read_ucr_datasets
+from time2feat.extraction.extractor import feature_extraction
+from time2feat.selection.selection import feature_selection
+from time2feat.model.clustering import ClusterWrapper
 
 
 def pipeline(

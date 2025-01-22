@@ -40,14 +40,16 @@ class ClusterWrapper(object):
         self.model = _define_model(model_type, n_clusters)
         self.transform_type = transform_type
 
-    def _normalize(self, x: np.array):
+    @staticmethod
+    def _normalize(x: np.array):
         x_mean = np.mean(x, axis=1, keepdims=True)
         x_std = np.std(x, axis=1, keepdims=True)
 
         x = (x - x_mean) / x_std
         return x
 
-    def remove_nan(self, x: np.array):
+    @staticmethod
+    def remove_nan(x: np.array):
         if len(x.shape) == 2:
             count = np.isnan(x).any(axis=0).sum()
             if count > 0:
@@ -55,7 +57,7 @@ class ClusterWrapper(object):
                 cond = np.logical_not(np.isnan(x).any(axis=0))
                 x = x[:, cond]
 
-            cond = ((x == float('inf')) | (x == float('-inf'))).any(axis=0)
+            # cond = ((x == float('inf')) | (x == float('-inf'))).any(axis=0)
 
         return x
 

@@ -28,7 +28,8 @@ def extract_univariate_features(ts: np.array, sensors_name: list, feats_select: 
         column_id='id',
         column_sort='time',
         n_jobs=0,
-        kind_to_fc_parameters=feats_select
+        kind_to_fc_parameters=feats_select,
+        disable_progressbar=True
     )
     features = features_extracted.T.iloc[:, 0].astype(float).to_dict()
     return features
