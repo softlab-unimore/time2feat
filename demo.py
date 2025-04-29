@@ -45,6 +45,7 @@ def feature_extraction_with_checkpoint(
             with open(feat_path, 'rb') as f:
                 return pickle.load(f)['df_features']
 
+    assert False
     # If the checkpoint file does not exist, extract features using the provided parameters
     df_features = feature_extraction(
         ts_list=ts_list,
@@ -117,7 +118,6 @@ def pipeline(
         checkpoint_dir=checkpoint_dir, ts_files=files,
         ts_list=ts_list, intra_type=intra_type, inter_type=inter_type, batch_size=batch_size, p=p
     )
-
     labels = {}
     if train_size > 0 and not train_real:
         if random_seed:

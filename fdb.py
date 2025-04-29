@@ -202,6 +202,128 @@ def compare_w_t2f():
     print('Here!')
 
 
+# def test_feature_selection_pipeline(
+#         files: list,
+#         train_size: float,
+#         output_dir: str,
+#         checkpoint_dir: str = './checkpoint',
+#         seed: int = None,
+#         train_real: bool = False,
+# ):
+#     # Create a results file name based on the base name of the directory of the first file and the train size
+#     results_name = os.path.basename(os.path.dirname(files[0])) + f'_s{int(train_size * 100)}.csv'
+#     results_path = os.path.join(output_dir, results_name)
+#     # Initialize a dictionary to store the results
+#     results = {}
+#
+#     # Create a list of all ranking methods from the RANKING_MAP dictionary
+#     ranking_methods = [val for arr in RANKING_MAP.values() for val in arr]
+#
+#     # Perform time2feat pipeline for each ranking method individually
+#     for ranking in ranking_methods:
+#         print(f'\n{ranking}')
+#         t1 = datetime.now()
+#         try:
+#             res, _ = pipeline(
+#                 files=files,
+#                 intra_type='tsfresh',
+#                 inter_type='distance',
+#                 transform_type='minmax',
+#                 model_type='Hierarchical',
+#                 ranking_type=[ranking],
+#                 ensemble_type=None,  # 'condorcet_fuse',
+#                 search_type='linear',
+#                 train_type='random',
+#                 train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+#                 batch_size=500,
+#                 p=4,
+#                 checkpoint_dir=checkpoint_dir,
+#                 random_seed=seed,
+#                 train_real=train_real
+#             )
+#         except:
+#             traceback.print_exc()
+#             res = {}
+#         t12 = (datetime.now() - t1)
+#         print(f'{ranking}: {int(t12.total_seconds() / 60)} min\n')
+#
+#         # Save the current results to a CSV file
+#         results[ranking] = res
+#         pd.DataFrame(results).T.to_csv(results_path, index=True)
+#
+#     # Perform time2feat pipeline for each ranking method individually w/o top-k search and PFA
+#     for ranking in ['mrmr', 'cife', 'cmim', 'icap', 'cfs']:
+#         print(f'\n{ranking}')
+#         t1 = datetime.now()
+#         try:
+#             res, _ = pipeline(
+#                 files=files,
+#                 intra_type='tsfresh',
+#                 inter_type='distance',
+#                 transform_type='minmax',
+#                 model_type='Hierarchical',
+#                 ranking_type=[ranking],
+#                 ranking_pfa=None,
+#                 ensemble_type=None,  # 'condorcet_fuse',
+#                 search_type=None,
+#                 train_type='random',
+#                 train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+#                 batch_size=500,
+#                 p=4,
+#                 checkpoint_dir=checkpoint_dir,
+#                 random_seed=seed,
+#                 train_real=train_real
+#             )
+#         except:
+#             traceback.print_exc()
+#             res = {}
+#         t12 = (datetime.now() - t1)
+#         print(f'{ranking} w/o S&PFA: {int(t12.total_seconds() / 60)} min\n')
+#
+#         # Save the current results to a CSV file
+#         results[f'{ranking} w/o S&PFA'] = res
+#         pd.DataFrame(results).T.to_csv(results_path, index=True)
+#
+#     # Perform time2feat pipeline based on ranking method groups and all ensemble methods
+#     for ensemble in ENSEMBLE:
+#         for k, ranking in ENSEMBLE_RANKING.items():
+#             if len(ranking) < 2:
+#                 continue
+#
+#             print(f'\n{ensemble} {ranking}')
+#             t1 = datetime.now()
+#             try:
+#                 res, _ = pipeline(
+#                     files=files,
+#                     intra_type='tsfresh',
+#                     inter_type='distance',
+#                     transform_type='minmax',
+#                     model_type='Hierarchical',
+#                     ranking_type=ranking,
+#                     ensemble_type=ensemble,  # 'condorcet_fuse',
+#                     search_type='linear',
+#                     train_type='random',
+#                     train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+#                     batch_size=500,
+#                     p=4,
+#                     checkpoint_dir=checkpoint_dir,
+#                     train_real=train_real
+#                 )
+#             except:
+#                 traceback.print_exc()
+#                 res = {}
+#
+#             t12 = (datetime.now() - t1)
+#             print(f'{ensemble} {k}: {int(t12.total_seconds() / 60)} min\n')
+#
+#             # Save the current results to a CSV file
+#             results[f'{ensemble}{k}'] = res
+#             pd.DataFrame(results).T.to_csv(results_path, index=True)
+#
+#     return results
+#
+#
+
 if __name__ == '__main__':
     # check_null_results()
     # check_results_difference()
