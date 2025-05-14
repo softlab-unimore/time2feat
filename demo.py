@@ -45,7 +45,6 @@ def feature_extraction_with_checkpoint(
             with open(feat_path, 'rb') as f:
                 return pickle.load(f)['df_features']
 
-    assert False
     # If the checkpoint file does not exist, extract features using the provided parameters
     df_features = feature_extraction(
         ts_list=ts_list,
@@ -103,8 +102,6 @@ def pipeline(
     # Simple consistency check
     if [x for x in files if not os.path.isfile(x)]:
         raise ValueError('At least on time-series path does not exist')
-    # if train_size < 0 or train_size > 1:
-    #     raise ValueError('Train size must be between 0 and 1')
 
     print('Read ucr datasets: ', files)
     ts_list, y_true = read_ucr_datasets(paths=files)
@@ -127,7 +124,6 @@ def pipeline(
 
     elif train_real:
         labels = extract_original_train_labels(files, y_true)
-
         print('Number of train labels: {}'.format(len(labels)))
 
     print('Number of extracted features: {}'.format(df_features.shape[1]))
@@ -164,23 +160,21 @@ RANKING = [
 
 if __name__ == '__main__':
     dataset = 'BasicMotions'
-    for i in range(100):
-        print(f"\nRun {i}")
-        pipeline(
-            files=[f'data/{dataset}/{dataset}_TEST.txt', f'data/{dataset}/{dataset}_TRAIN.txt'],
-            intra_type='tsfresh',
-            inter_type='distance',
-            transform_type='minmax',
-            model_type='Hierarchical',
-            ranking_type=["anova"],
-            ensemble_type="average",
-            search_type='cv2',  # linear, fixed, cv5, None, testcv5
-            train_type='random',
-            train_size=5,  # 0.2, 0.3, 0.4, 0.5
-            batch_size=500,
-            p=4,
-            checkpoint_dir='./checkpoint',
-            random_seed=42 + i,
-            train_real=False,
-        )
+    pipeline(
+        files=[f'data/{dataset}/{dataset}_TEST.txt', f'data/{dataset}/{dataset}_TRAIN.txt'],
+        intra_type='tsfresh',
+        inter_type='distance',
+        transform_type='minmax',
+        model_type='Hierarchical',
+        ranking_type=["anova"],
+        ensemble_type="average",
+        search_type='cv2',  # linear, fixed, cv5, None, testcv5
+        train_type='random',
+        train_size=5,  # 0.2, 0.3, 0.4, 0.5
+        batch_size=500,
+        p=4,
+        checkpoint_dir='./checkpoint',
+        random_seed=42,
+        train_real=False,
+    )
     print('Hello World!')
