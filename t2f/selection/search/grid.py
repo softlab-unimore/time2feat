@@ -24,6 +24,7 @@ def simple_grid_search(
         is_time2feat: bool = False,
         df_test: pd.DataFrame = None,
         y_test: list = None,
+        ablation=None,
 ) -> Tuple[int, bool, str, float, pd.DataFrame]:
     """Performs a simple grid search over a set of parameters to find the optimal number of top features.
 
@@ -51,7 +52,23 @@ def simple_grid_search(
     # # Rank features using the ranking object
     # ranker.ranking(df=df_train, y=y_train)
 
-    if not is_time2feat:
+    if ablation is not None:
+        grid_params = {
+            'top_k': top_k_values,
+            'with_separate_domains': [True, False],
+            'transform_type': ['minmax', 'standard', None],
+            'pfa': [0.9, None]
+        }
+        if ablation == 'pfa':
+            grid_params['pfa'] = [0.9]
+        elif ablation == 'minmax':
+            grid_params['transform_type'] = ['minmax']
+        elif ablation == 'standard':
+            grid_params['transform_type'] = ['standard']
+        elif ablation == 'double_pool':
+            grid_params['with_separate_domains'] = [True]
+
+    elif not is_time2feat:
         # Define grid parameters
         grid_params = {
             'top_k': top_k_values,

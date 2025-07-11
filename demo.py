@@ -78,8 +78,6 @@ def extract_original_train_labels(files: List[str], y_true: np.ndarray) -> dict:
 
         start_idx += len(y)
 
-    assert False
-
 
 def pipeline(
         files: List[str],
@@ -98,6 +96,7 @@ def pipeline(
         checkpoint_dir: Optional[str] = None,
         random_seed: Optional[int] = None,
         train_real: bool = False,
+        ablation=None,
 ) -> Tuple[dict, pd.DataFrame]:
     # Simple consistency check
     if [x for x in files if not os.path.isfile(x)]:
@@ -129,6 +128,10 @@ def pipeline(
     print('Number of extracted features: {}'.format(df_features.shape[1]))
     print(f'Feature selection: {ranking_type}')
     context = {'model_type': model_type, 'transform_type': transform_type}
+
+    if ablation:
+        print(f'Ablation: {ablation}')
+
     top_features, transform_type, df_debug = feature_selection(
         df=df_features,
         labels=labels,
@@ -137,7 +140,8 @@ def pipeline(
         pfa_variance=ranking_pfa,
         search_type=search_type,
         context=context,
-        y_true=list(y_true)
+        y_true=list(y_true),
+        ablation=ablation,
     )
     df_features = df_features[top_features]
     print('Number of selected features: {}'.format(df_features.shape[1]))
@@ -168,7 +172,7 @@ if __name__ == '__main__':
         model_type='Hierarchical',
         ranking_type=["anova"],
         ensemble_type="average",
-        search_type='cv2',  # linear, fixed, cv5, None, testcv5
+        search_type='cv5',  # linear, fixed, cv5, None, testcv5
         train_type='random',
         train_size=5,  # 0.2, 0.3, 0.4, 0.5
         batch_size=500,

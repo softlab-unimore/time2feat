@@ -19,6 +19,7 @@ def cv_search_on_train_metrics(
         df_true: pd.DataFrame = None,
         y_true: list = None,
         with_test: bool = False,
+        ablation=None
 ):
     kf = KFold(n_splits=k_split, shuffle=True)
     indexes = np.arange(len(df_train))
@@ -63,7 +64,8 @@ def cv_search_on_train_metrics(
             df_true=df_true,
             y_true=y_true,
             df_test=df_test,
-            y_test=y_test
+            y_test=y_test,
+            ablation=ablation
         )
 
         df_debug_fold['fold'] = i

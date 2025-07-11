@@ -34,6 +34,7 @@ def supervised_selection(
         pfa_variance: Optional[float] = 0.9,
         search_type: Optional[str] = None,  # 'fixed', 'linear', 'cv5', None
         y_true: list = None,
+        ablation=None,
 ) -> Tuple[List[str], str, pd.DataFrame]:
     # Extract train and test records, with label associated with train data
     train_idx = list(labels.keys())
@@ -58,7 +59,8 @@ def supervised_selection(
         transform_type=transform_type,
         search_type=search_type,
         df_true=df,
-        y_true=y_true
+        y_true=y_true,
+        ablation=ablation,
     )
     ranker.pfa_variance = pfa_variance  # Set the PFA variance to the best value found
     top_features = ranker.select(df=df_train, top_k=top_k, with_separate_domains=with_separate_domains)
@@ -88,6 +90,7 @@ def feature_selection(
         search_type: str = 'fixed',
         context: dict = None,
         y_true: list = None,
+        ablation=None
 ) -> Tuple[List[str], str, pd.DataFrame]:
     if 'transform_type' not in context:
         raise ValueError('The context must contain a "transform_type" key.')
@@ -112,7 +115,8 @@ def feature_selection(
             transform_type=transform_type,
             ensemble_type=ensemble_type,
             search_type=search_type,
-            y_true=y_true
+            y_true=y_true,
+            ablation=ablation,
         )
     else:
         df_debug = pd.DataFrame()

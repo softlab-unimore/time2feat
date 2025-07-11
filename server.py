@@ -40,9 +40,10 @@ RANKING_MAP = {
 ENSEMBLE_RANKING = {
     # 'all': ['anova', 'cfs', 'fisher_score', 'gini', 'laplace_score', 'trace_ratio', 'trace_ratio100'],
     # 'top5': ['anova', 'fisher_score', 'laplace_score', 'trace_ratio', 'trace_ratio100'],
-    'aft': ['anova', 'fisher_score', 'trace_ratio'],
-    'afl': ['anova', 'fisher_score', 'laplace_score'],
+    # 'aft': ['anova', 'fisher_score', 'trace_ratio'],
+    # 'afl': ['anova', 'fisher_score', 'laplace_score'],
     'aftl': ['anova', 'fisher_score', 'trace_ratio', 'laplace_score'],
+    'atl': ['anova', 'trace_ratio', 'laplace_score'],
     # 'aft': ['anova', 'fisher_score', 'trace_ratio'],
     # 'alt': ['anova', 'laplace_score', 'trace_ratio'],
     # 'al1': ['anova', 'laplace_score', 'trace_ratio100']
@@ -238,6 +239,72 @@ def debug_ranking_pipeline(
     print("=======================================")
 
 
+def anova_ablation(
+        files: list,
+        train_size: float,
+        output_dir: str,
+        checkpoint_dir: str = './checkpoint',
+        seed: int = None,
+        train_real: bool = False,
+):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Output filename
+    results_name = os.path.basename(os.path.dirname(files[0])) + f'_s{int(train_size * 100)}.csv'
+    results_path = os.path.join(output_dir, f"ablation_{results_name}")
+
+    timing_results = {}  # Dictionary to store timing information
+
+    skip_ablations = []
+    if os.path.exists(results_path):
+        # Read precomputed results
+        saved_results = pd.read_csv(results_path)
+        results = saved_results.to_dict(orient='records')
+        skip_ablations = saved_results['ablation'].tolist()
+    else:
+        results = []  # Empty list to store clustering metrics
+
+    print('Ablations')
+    rankers = ['anova']
+    ablations = ['pfa', 'double_pool', 'minmax', 'standard']
+    for ranker in rankers:
+        for ablation in ablations:
+            ablation_name = f'{ranker}{ablation}'
+            if ablation_name not in skip_ablations:
+                print(f'\n{ablations}\n')
+                start_time = time.time()  # Start timing
+                res, df_debug = pipeline(
+                    files=files,
+                    intra_type='tsfresh',
+                    inter_type='distance',
+                    transform_type='minmax',
+                    model_type='Hierarchical',
+                    ranking_type=[ranker],
+                    ensemble_type=None,  # 'condorcet_fuse',
+                    search_type='cv5',
+                    train_type='random',
+                    train_size=train_size,  # 0.2, 0.3, 0.4, 0.5
+                    batch_size=500,
+                    p=4,
+                    checkpoint_dir=checkpoint_dir,
+                    random_seed=seed,
+                    train_real=train_real,
+                    ablation=ablation
+                )
+                res['ablation'] = ablation_name
+                end_time = time.time()  # End timing
+                execution_time = end_time - start_time  # Calculate execution time in seconds
+
+                # Save ranker results
+                results.append(res)
+                pd.DataFrame(results).to_csv(results_path, index=False)
+
+                # Save ranker execution time
+                timing_results[ablation] = execution_time  # Store timing result
+                print(f"Execution time for {ablation}: {execution_time:.2f} seconds ({execution_time / 60:.2f} min)")
+
+
 def main():
     data_dir, output_dir, checkpoint_dir, seed = parse_params()
 
@@ -255,6 +322,9 @@ def main():
 
         for train_size in [5]:
             debug_ranking_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
+
+        for train_size in [5]:
+            anova_ablation(files, train_size, output_dir, checkpoint_dir, seed)
 
 
 if __name__ == '__main__':

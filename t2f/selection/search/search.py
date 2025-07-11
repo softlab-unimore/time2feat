@@ -19,6 +19,7 @@ def search(
         search_type: Optional[str] = None,
         df_true: pd.DataFrame = None,
         y_true: list = None,
+        ablation=None
 ) -> Tuple[int, bool, str, float, pd.DataFrame]:
     """
     Performs a search for the optimal number of top features, with optional separate domains and transformation type.
@@ -33,7 +34,8 @@ def search(
             model_type=model_type,
             transform_type=transform_type,
             df_true=df_true,
-            y_true=y_true
+            y_true=y_true,
+            ablation=ablation
         )
     elif search_type == 'linear':
         return simple_grid_search(
@@ -45,7 +47,8 @@ def search(
             model_type=model_type,
             transform_type=transform_type,
             df_true=df_true,
-            y_true=y_true
+            y_true=y_true,
+            ablation=ablation
         )
 
     elif search_type.startswith('cv'):
@@ -60,7 +63,8 @@ def search(
             model_type=model_type,
             transform_type=transform_type,
             df_true=df_true,
-            y_true=y_true
+            y_true=y_true,
+            ablation=ablation
         )
 
     elif search_type.startswith('testcv'):
@@ -77,6 +81,7 @@ def search(
             df_true=df_true,
             y_true=y_true,
             with_test=True,
+            ablation=ablation
         )
 
     elif search_type == 'time2feat':
@@ -90,7 +95,8 @@ def search(
             transform_type=transform_type,
             df_true=df_true,
             y_true=y_true,
-            is_time2feat=True
+            is_time2feat=True,
+            ablation=ablation
         )
 
     elif search_type is None:
