@@ -320,7 +320,7 @@ def main():
             os.path.join(data_dir, dataset, f'{dataset}_TRAIN.ts'),
         ]
 
-        for train_size in [5]:
+        for train_size in [4, 5, 6]:
             debug_ranking_pipeline(files, train_size, output_dir, checkpoint_dir, seed)
 
         for train_size in [5]:
