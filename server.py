@@ -267,7 +267,7 @@ def anova_ablation(
 
     print('Ablations')
     rankers = ['anova']
-    ablations = ['pfa', 'double_pool', 'minmax', 'standard']
+    ablations = ['pfa', 'no_pfa', 'single_pool', 'double_pool', 'minmax', 'standard']
     for ranker in rankers:
         for ablation in ablations:
             ablation_name = f'{ranker}{ablation}'

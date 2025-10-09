@@ -61,12 +61,16 @@ def simple_grid_search(
         }
         if ablation == 'pfa':
             grid_params['pfa'] = [0.9]
+        elif ablation == 'no_pfa':
+            grid_params['pfa'] = [None]
         elif ablation == 'minmax':
             grid_params['transform_type'] = ['minmax']
         elif ablation == 'standard':
             grid_params['transform_type'] = ['standard']
         elif ablation == 'double_pool':
             grid_params['with_separate_domains'] = [True]
+        elif ablation == 'single_pool':
+            grid_params['with_separate_domains'] = [False]
 
     elif not is_time2feat:
         # Define grid parameters
